@@ -38,7 +38,7 @@ class MinimalBlock:
         else:
             return False
 
-    class MinimalChain:
+class MinimalChain:
         def __init__(self):  # initialize when creating a chain
             self.blocks = [self.get_genesis_block()]
 
