@@ -1,3 +1,5 @@
+##https://github.com/edenau/minimal-blockchain/blob/master/main.ipynb
+
 import copy
 import datetime
 import hashlib
