@@ -1,5 +1,8 @@
 ##https://github.com/edenau/minimal-blockchain/blob/master/main.ipynb
 
+##Website that explains blockchain and the code
+##https://towardsdatascience.com/building-a-minimal-blockchain-in-python-4f2e9934101d
+
 import copy
 import datetime
 import hashlib
