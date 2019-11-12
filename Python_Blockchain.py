@@ -70,9 +70,9 @@ def main():
 
     #add data to the blockchain
     blockchain.add(Block("Apples : $4.45"))
-    #time.sleep(1)
+    time.sleep(1)
     blockchain.add(Block("Oranges : $6.54"))
-    #time.sleep(1)
+    time.sleep(1)
     blockchain.add(Block("Pairs: $2.23"))
 
 
@@ -115,8 +115,8 @@ def main():
 
 
 
-        print("Displaying information for the purchases made on or after ", x, " and before ", y)
 
+        print("Displaying information for the purchases made on or after ", x, " and before ", y)
 
 ##    #Printing blocks within date range
 ##    for date_object in date_array:
