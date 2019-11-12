@@ -42,14 +42,14 @@ class Blockchain:
     dummy = head = block
 
     def add(self, block):
-
+        block.trans_id = self.block.trans_id + 1
         block.previous_hash = self.block.hash()
         block.blockNo = self.block.blockNo + 1
 
         self.block.next = block
         self.block = self.block.next
 
-        self.block.trans_id += 1
+
         print("---data added---")
 
     def mine(self, block):
