@@ -17,15 +17,7 @@ def listOutput(listInput):
     if isinstance(listInput[len(listInput)-1], list):
         for i in range(len(listInput)):
             # Convert each list into a string
-            
-            # print(f"listInput[{i}] PRE-RECURSION: {listInput[i]}")
-            # print(f"listInput PRE-RECURSION: {listInput}")
-            # print("RECURSING")
-            
             listInput[i] = listOutput(listInput[i])
-            
-            # print(f"listInput[{i}] POST-RECURSION: {listInput[i]}")
-            # print(f"listInput POST-RECURSION: {listInput}")
     
     print(f"listInput: {listInput}")
     
@@ -40,8 +32,12 @@ def listOutput(listInput):
 def main():
     access = False
     
-    while access == False:
+    while True:
         access = login.UsernameEnter()
+        if access == True:
+            break
+        else:
+            return
     
     layout = [[sg.Text('Receipt: ', key='_LABEL_'), sg.Text('(Empty)', key='_OUTPUT_') ],
               [sg.Input(key='_IN_', do_not_clear=False)],
