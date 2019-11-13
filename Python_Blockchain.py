@@ -70,9 +70,9 @@ def main():
 
     #add data to the blockchain
     blockchain.add(Block("Apples : $4.45"))
-    time.sleep(1)
+    #time.sleep(1)
     blockchain.add(Block("Oranges : $6.54"))
-    time.sleep(1)
+    #time.sleep(1)
     blockchain.add(Block("Pairs: $2.23"))
 
 
@@ -97,8 +97,10 @@ def main():
         i = 0.0
         x = str(input("Enter the start date (yyyy-mm-dd): "))
         y = str(input("Enter the end date (yyyy-mm-dd): "))
+        print()
 
         
+        #print list of dates within range
         start = datetime.datetime.strptime(x, "%Y-%m-%d")
         end = datetime.datetime.strptime(y, "%Y-%m-%d")
         date_array = \
@@ -108,11 +110,30 @@ def main():
         for date_object in date_array:
             print(date_object.strftime("%Y-%m-%d"))
             
+        #Change blockchain timestamps into strings
+        while blockchain.head != None:
+            start_date_str = str(blockchain.head.timestamp)
+            start_date = start_date_str[:10]
+            print("Timestamps as strings: ", start_date)
+            #move to next block
+            blockchain.head = blockchain.head.next
 
-        start_date_str = str(block.timestamp)
-        start_date = start_date_str[:10]
-        print("Date as a string: ", start_date)
+            
+            #print("Printing each block timestamp", blockchain.head.timestamp)
+        
+            
+        #start_date_str = str(block.timestamp)
+        #start_date = start_date_str[:10]
+        #print("Start date as a string: ", start_date)
 
+        
+        #Print entire blockchain
+        print()
+        print("PRINTING THE ENTIRE BLOCKCHAIN")
+        print()
+        while blockchain.head != None:
+            print(blockchain.head)
+            blockchain.head = blockchain.head.next
 
 
 
@@ -144,7 +165,17 @@ def main():
 ##    while blockchain.head != None:
 ##        print(blockchain.head)
 ##        blockchain.head = blockchain.head.next
+    else:
+        print("Error: INVALID INPUT")
+        print()
+        print()
+        main()
+        
     print()
     print()
     main()
 main()
+
+
+
+#Reference used: https://github.com/howCodeORG/Simple-Python-Blockchain/blob/master/blockchain.py
