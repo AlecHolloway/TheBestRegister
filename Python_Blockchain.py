@@ -116,39 +116,61 @@ def main():
             print(date_object.strftime("%Y-%m-%d"))
             
         #Change blockchain timestamps into strings
-        while blockchain.head != None:
-            date_str = str(blockchain.head.timestamp)
-            date = date_str[:10]
-            print("Timestamps as strings: ", date)
-            #move to next block
-            blockchain.head = blockchain.head.next
+##        while blockchain.head != None:
+##            date_str = str(blockchain.head.timestamp)
+##            date = date_str[:10]
+##            print("Timestamps as strings: ", date)
+##            #move to next block
+##            blockchain.head = blockchain.head.next
 
-            
+        date_str = str(blockchain.head.timestamp)
+        date = date_str[:10]
             #print("Printing each block timestamp", blockchain.head.timestamp)
     
-
-##        #Compare the start date
-##        start_date = dt.strptime(x, "%Y-%m-%d")
-##        iter_date = dt.strptime(blockchain.head.timestamp, "%Y-%m-%d")
-##        end_date = dt.strptime(y, "%Y-%m-%d")
-
-        #Search for the first transaction within the selected range
-##        while start_date < iter_date:
-##            blockchain.head = blockchain.head.next
-##
-##        #Display the transactions withing the selected range
-##        while iter_date < end_date:
-##            print(blockchain.head.timestamp, " is within the range.")
-##            print(blockchain.head)
-##            blockchain.head = blockchain.head.next
         
-        #Print entire blockchain
-        print()
-        print("PRINTING THE ENTIRE BLOCKCHAIN")
-        print()
-        while blockchain.head_start != None:
+        #Compare the start date
+        start_date = dt.strptime(x, "%Y-%m-%d")
+        iter_date = dt.strptime(date, "%Y-%m-%d")
+        end_date = dt.strptime(y, "%Y-%m-%d")
+
+        if start_date > end_date:
+            print("Error: Start date cannot be greater than end date.")
+            print()
+            print()
+            main()
+            
+            
+        #Search for the first transaction within the selected range
+        while iter_date < start_date:
+            print()
+            print("Comparing start date to iteration.")
+            print("Start date: ", start_date, "Iteration date: ", date)
+            blockchain.head_start = blockchain.head_start.next
+
+        #Display the transactions withing the selected range
+        n = 0
+        while iter_date <= end_date:
+            print()
+            print("Comparing iteration to end date.")
+            print(blockchain.head_start.timestamp, " is within the range.")
+            print("Iteration date: ",iter_date, "End date: ", end_date)
             print(blockchain.head_start)
             blockchain.head_start = blockchain.head_start.next
+            n += 1
+            if n >= 4:
+                break
+
+            
+        #add data to the blockchain
+        blockchain.add(Block("Cucumbers : $5.69"))
+        
+##        #Print entire blockchain
+##        print()
+##        print("PRINTING THE ENTIRE BLOCKCHAIN")
+##        print()
+##        while blockchain.head_start != None:
+##            print(blockchain.head_start)
+##            blockchain.head_start = blockchain.head_start.next
 
 
 
