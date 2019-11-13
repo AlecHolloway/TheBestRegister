@@ -3,6 +3,7 @@ import hashlib
 from pygrok import Grok
 import time
 from datetime import datetime as dt
+import collections
 
 
 class Block:
@@ -42,9 +43,11 @@ class Blockchain:
     maxNonce = 2**32
     target = 2 ** (256-diff)
 
+
     block = Block("Genesis")
     dummy = head = block
     head_start = head
+    
 
     def add(self, block):
         block.trans_id = self.block.trans_id + 1
@@ -54,6 +57,7 @@ class Blockchain:
 
         self.block.next = block
         self.block = self.block.next
+        
         print("---transaction added---")
 
     def mine(self, block):
@@ -69,29 +73,44 @@ def main():
     block = Block(0)
     blockchain = Blockchain()
     print("Current time:", block.timestamp)
-
+    counter = 0
+    
     #add data to the blockchain
     blockchain.add(Block("Apples : $4.45"))
+    counter += 1
     #time.sleep(1)
     blockchain.add(Block("Oranges : $6.54"))
+    counter += 1
     #time.sleep(1)
     blockchain.add(Block("Pairs: $2.23"))
-
+    counter += 1
+    
+    print("Counter value after 3 transactions: ", counter)
 
     #Give choice of searching by date or transaction ID
     answer = str(input("Would you like to search by date or by transaction ID (enter 'date' or 'id'): "))
     print()
     print()
 
+
+    print()
     if (answer == "id"):
         #searching by block number
         x = int(input("Enter which transaction ID you would like to display: "))
 
+        #Error checking for ID to be an int
+        
         i = 0
-        #Print the selected block
+        #Print the selected block        
+        if x > counter:
+            print("ERROR: out of range")
+            print()
+            main()
+            
         while i < x:
             blockchain.head = blockchain.head.next
             i += 1
+            print()
         print("Displaying information for transaction ID: ", x)
         print()
         print(blockchain.head)
@@ -133,8 +152,10 @@ def main():
         iter_date = dt.strptime(date, "%Y-%m-%d")
         end_date = dt.strptime(y, "%Y-%m-%d")
 
+
+        #Error checking to see if start day is valid
         if start_date > end_date:
-            print("Error: Start date cannot be greater than end date.")
+            print("ERROR: Start date cannot be greater than end date.")
             print()
             print()
             main()
@@ -184,27 +205,17 @@ def main():
     
 
 
-    
-#Print the blocks based on date of purchase
-    #Move to starting date block
-##    while i < x:
-##        blockchain.head = blockchain.head.next
-##        i += 1
-
-
-    #Print blocks until end date reached
-##    while i < y:
-##        print(blockchain.head)
-##        blockchain.head = blockchain.head.next
-
 
 
     #Print entire blockchain
 ##    while blockchain.head != None:
 ##        print(blockchain.head)
 ##        blockchain.head = blockchain.head.next
+
+
+    
     else:
-        print("Error: INVALID INPUT")
+        print("ERROR: INVALID INPUT")
         print()
         print()
         main()
