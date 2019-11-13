@@ -1,6 +1,6 @@
 # TheBestRegister
 
-GitHub command line cheat sheet:
+GitHub command line cheat sheet:  
 https://github.github.com/training-kit/downloads/github-git-cheat-sheet.pdf
 
 This uses PySimpleGUI, which has to be installed via command line.  
