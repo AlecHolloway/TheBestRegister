@@ -2,6 +2,7 @@ import datetime
 import hashlib
 from pygrok import Grok
 import time
+from datetime import datetime as dt
 
 
 class Block:
@@ -43,6 +44,7 @@ class Blockchain:
 
     block = Block("Genesis")
     dummy = head = block
+    head_start = head
 
     def add(self, block):
         block.trans_id = self.block.trans_id + 1
@@ -78,6 +80,8 @@ def main():
 
     #Give choice of searching by date or transaction ID
     answer = str(input("Would you like to search by date or by transaction ID (enter 'date' or 'id'): "))
+    print()
+    print()
 
     if (answer == "id"):
         #searching by block number
@@ -88,7 +92,8 @@ def main():
         while i < x:
             blockchain.head = blockchain.head.next
             i += 1
-        print("Displaying information for the number ", x, " block: ")
+        print("Displaying information for transaction ID: ", x)
+        print()
         print(blockchain.head)
 
     elif (answer == "date"):
@@ -112,28 +117,39 @@ def main():
             
         #Change blockchain timestamps into strings
         while blockchain.head != None:
-            start_date_str = str(blockchain.head.timestamp)
-            start_date = start_date_str[:10]
-            print("Timestamps as strings: ", start_date)
+            date_str = str(blockchain.head.timestamp)
+            date = date_str[:10]
+            print("Timestamps as strings: ", date)
             #move to next block
             blockchain.head = blockchain.head.next
 
             
             #print("Printing each block timestamp", blockchain.head.timestamp)
-        
-            
-        #start_date_str = str(block.timestamp)
-        #start_date = start_date_str[:10]
-        #print("Start date as a string: ", start_date)
+    
 
+##        #Compare the start date
+##        start_date = dt.strptime(x, "%Y-%m-%d")
+##        iter_date = dt.strptime(blockchain.head.timestamp, "%Y-%m-%d")
+##        end_date = dt.strptime(y, "%Y-%m-%d")
+
+        #Search for the first transaction within the selected range
+##        while start_date < iter_date:
+##            blockchain.head = blockchain.head.next
+##
+##        #Display the transactions withing the selected range
+##        while iter_date < end_date:
+##            print(blockchain.head.timestamp, " is within the range.")
+##            print(blockchain.head)
+##            blockchain.head = blockchain.head.next
         
         #Print entire blockchain
         print()
         print("PRINTING THE ENTIRE BLOCKCHAIN")
         print()
         while blockchain.head != None:
-            print(blockchain.head)
-            blockchain.head = blockchain.head.next
+            print(blockchain.head_start)
+            blockchain.head_start = blockchain.head_start.next
+
 
 
 
@@ -179,3 +195,4 @@ main()
 
 
 #Reference used: https://github.com/howCodeORG/Simple-Python-Blockchain/blob/master/blockchain.py
+#Reference used: https://stackoverflow.com/questions/20365854/comparing-two-date-strings-in-python
