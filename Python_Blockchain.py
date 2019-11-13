@@ -146,7 +146,7 @@ def main():
         print()
         print("PRINTING THE ENTIRE BLOCKCHAIN")
         print()
-        while blockchain.head != None:
+        while blockchain.head_start != None:
             print(blockchain.head_start)
             blockchain.head_start = blockchain.head_start.next
 
