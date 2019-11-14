@@ -10,13 +10,23 @@ sg.change_look_and_feel('DarkAmber')
 
 
 
-credentials = {'username':'password', 'admin':'admin', 'maclain':'admin', 'hayden':'hayden'}
+credentials = {'username':'password', 'admin':'admin', 'maclain':'d033e22ae348aeb5660fc2140aec35850c4da997', 'hayden':'hayden'}
+
+    
+def PasswordMatches(a_hash, password):
+    password_utf = password.encode('utf-8')
+    sha1hash = hashlib.sha1()
+    sha1hash.update(password_utf)
+    password_hash = sha1hash.hexdigest()
+    return password_hash == a_hash
 
 def login_check(un,pw):
     for key in credentials:
-        if(un == key and pw == credentials[key]):
+        if(un == key and PasswordMatches(credentials[key], pw)):
             return True
-                
+'''
+NEED TO COMBINE THESE FUNCTIONS
+'''
 
 def UsernameEnter():
     layout2 = [
@@ -38,13 +48,14 @@ def UsernameEnter():
              
         username = input['-username-']
         password = input['-password-']
+
             
         if login_check(username, password) and ev1 in ('Login'):
             print('Such a successful login')
             #open other window
+            un.Close()
             return True
 
-    un.Close()
     
 
 
