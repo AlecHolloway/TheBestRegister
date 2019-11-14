@@ -5,6 +5,10 @@ import time
 from datetime import datetime as dt
 import collections
 
+#Database imports
+#from bigchaindb_driver import BigchainDB
+#from bigchaindb_driver.crypto import generate_keypair
+
 
 class Block:
     blockNo = 0
@@ -16,6 +20,7 @@ class Block:
     timestamp = datetime.datetime.now()
     store_location = "601 Critz Street Starkville, MS"
 
+    counter = 0
     trans_id = 0
 
     def __init__(self, data):
@@ -35,7 +40,7 @@ class Block:
         return h.hexdigest()
 
     def __str__(self):
-        return "Block Hash: " + str(self.hash()) + "\nBlockNo: " + str(self.blockNo) + "\nBlock Data: " + str(self.data) + "\nHashes: " + str(self.nonce) + "\nTimestamp: " + str(self.timestamp) + "\nTransaction ID: " + str(self.trans_id) + "\nStore Location: " + str(self.store_location) + "\n--------------"
+        return "Block Hash: " + str(self.hash()) + "\nTransaction ID: " + str(self.blockNo) + "\nBlock Data: " + str(self.data) + "\nHashes: " + str(self.nonce) + "\nTimestamp: " + str(self.timestamp) + "\nTransaction ID: " + str(self.trans_id) + "\nStore Location: " + str(self.store_location) + "\n--------------"
 
 class Blockchain:
 
@@ -50,10 +55,15 @@ class Blockchain:
     
 
     def add(self, block):
+        #Counter variable
+        block.counter = self.block.counter + 1
+        
         block.trans_id = self.block.trans_id + 1
         
         block.previous_hash = self.block.hash()
         block.blockNo = self.block.blockNo + 1
+
+        
 
         self.block.next = block
         self.block = self.block.next
@@ -73,19 +83,19 @@ def main():
     block = Block(0)
     blockchain = Blockchain()
     print("Current time:", block.timestamp)
-    counter = 0
+
     
     #add data to the blockchain
     blockchain.add(Block("Apples : $4.45"))
-    counter += 1
+    #counter += 1
     #time.sleep(1)
     blockchain.add(Block("Oranges : $6.54"))
-    counter += 1
+    #counter += 1
     #time.sleep(1)
     blockchain.add(Block("Pairs: $2.23"))
-    counter += 1
+    #counter += 1
     
-    print("Counter value after 3 transactions: ", counter)
+    print("New counter value after 3 transactions: ", block.counter)
 
     #Give choice of searching by date or transaction ID
     answer = str(input("Would you like to search by date or by transaction ID (enter 'date' or 'id'): "))
@@ -102,10 +112,10 @@ def main():
         
         i = 0
         #Print the selected block        
-        if x > counter:
-            print("ERROR: out of range")
-            print()
-            main()
+##        if x > counter:
+##            print("ERROR: out of range")
+##            print()
+##            main()
             
         while i < x:
             blockchain.head = blockchain.head.next
@@ -212,7 +222,7 @@ def main():
 ##        print(blockchain.head)
 ##        blockchain.head = blockchain.head.next
 
-
+    
     
     else:
         print("ERROR: INVALID INPUT")
