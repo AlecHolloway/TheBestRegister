@@ -56,8 +56,10 @@ def UsernameEnter():
             un.Close()
             return True
 
+        elif not login_check(username, password) and ev1 in ('Login'):
+            print('Invalid credentials provided. Please try again.')
+            
     
-
 
 
 def main():
