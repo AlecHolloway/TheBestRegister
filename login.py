@@ -9,8 +9,9 @@ import hashlib
 sg.change_look_and_feel('DarkAmber') 
 
 
-#					'password'						'admin'						'GOATED Lord of Python'
+
 credentials = {'username':'5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'admin':'d033e22ae348aeb5660fc2140aec35850c4da997', 'maclain':'f798ddf054d3894403dc9c5e58c253be66defe4b'}
+
 
     
 def PasswordMatches(a_hash, password):
@@ -24,9 +25,8 @@ def login_check(un,pw):
     for key in credentials:
         if(un == key and PasswordMatches(credentials[key], pw)):
             return True
-'''
-NEED TO COMBINE THESE FUNCTIONS
-'''
+        
+
 
 def UsernameEnter():
     layout2 = [
@@ -55,11 +55,22 @@ def UsernameEnter():
             #open other window
             un.Close()
             return True
-
+            
         elif not login_check(username, password) and ev1 in ('Login'):
             print('Invalid credentials provided. Please try again.')
+            inval = [
+                [sg.Text('Invalid credentials provided. Please try again.')],
+                [sg.Button('Ok')]
+            ]
+            err = sg.Window('Inccorect username or password', inval)
+            while True:
+                ev2, okay = err.Read()
+                if ev2 in (None, 'Ok'):
+                    err.Close()
+                    break
             
     
+
 
 
 def main():
