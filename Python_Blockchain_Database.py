@@ -93,15 +93,28 @@ class Blockchain:
 
 
 def main():
-    #printing contents of database
-    #posts = db.posts
-##    scotts_posts = posts.find({'author': 'Scott'})
-##    print(scotts_posts)
-##   
-##    for post in scotts_posts:
-##            print(post)
+    print("printing contents of the second transaction in database")
+    print()
+    transactions = db.transactions
+    
+    results = transactions.find({"_id":2})
+    
+    for x in results:
+        print(x)
 
+    #Finds multiple posts from DB
+        print()
+        print()
+        print("---Print all contents of the database---")
+        results = transactions.find({})
+        #iterate over the data to print to screen
+        for x in results:
+            print(x)
             
+
+    print("Sleeping")
+    time.sleep(120)
+
     block = Block(0)
     blockchain = Blockchain()
     print("Current time:", block.timestamp)
@@ -109,13 +122,13 @@ def main():
     #counter = 0
 
     # add data to the blockchain
-    blockchain.add(Block("Apples : $4.45"))
-    
-    # time.sleep(1)
-    blockchain.add(Block("Oranges : $6.54"))
-    
-    # time.sleep(1)
-    blockchain.add(Block("Pairs: $2.23"))
+##    blockchain.add(Block("Apples : $4.45"))
+##    
+##    # time.sleep(1)
+##    blockchain.add(Block("Oranges : $6.54"))
+##    
+##    # time.sleep(1)
+##    blockchain.add(Block("Pairs: $2.23"))
     
 
     tbr_dict = block.tbr_dict
@@ -124,8 +137,9 @@ def main():
     while blockchain.head_start2 != None:
         print("ADDING TO DICTIONARY")
         block.tbr_dict.update({"_id":blockchain.head_start2._id})
-        block.tbr_dict.update({"Block data":blockchain.head_start2.data})
+        block.tbr_dict.update({"Items purchased":blockchain.head_start2.data})
         block.tbr_dict.update({"Timestamp":blockchain.head_start2.timestamp})
+        block.tbr_dict.update({"Transaction hash":blockchain.head_start2.hash()})
         block.tbr_dict.update({"Store Location":blockchain.head_start2.store_location})
 
 
@@ -231,7 +245,7 @@ def main():
                 break
 
         # add data to the blockchain
-        blockchain.add(Block("Cucumbers : $5.69"))
+##        blockchain.add(Block("Cucumbers : $5.69"))
 
         ##        #Print entire blockchain
         ##        print()
