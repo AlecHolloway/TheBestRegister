@@ -93,27 +93,24 @@ class Blockchain:
 
 
 def main():
-    print("printing contents of the second transaction in database")
     print()
     transactions = db.transactions
     
-    results = transactions.find({"_id":2})
     
-    for x in results:
-        print(x)
 
-    #Finds multiple posts from DB
-        print()
-        print()
-        print("---Print all contents of the database---")
-        results = transactions.find({})
-        #iterate over the data to print to screen
-        for x in results:
-            print(x)
+    #Finds all posts from DB
+##    print()
+##    print()
+##    print("---Print all contents of the database---")
+##    results = transactions.find({})
+##    #iterate over the data to print to screen
+##    for x in results:
+##        print(x)
             
 
-    print("Sleeping")
-    time.sleep(120)
+##    print("Sleeping")
+##    time.sleep(120)
+    
 
     block = Block(0)
     blockchain = Blockchain()
@@ -133,18 +130,20 @@ def main():
 
     tbr_dict = block.tbr_dict
     transactions = db.transactions
-    
-    while blockchain.head_start2 != None:
-        print("ADDING TO DICTIONARY")
-        block.tbr_dict.update({"_id":blockchain.head_start2._id})
-        block.tbr_dict.update({"Items purchased":blockchain.head_start2.data})
-        block.tbr_dict.update({"Timestamp":blockchain.head_start2.timestamp})
-        block.tbr_dict.update({"Transaction hash":blockchain.head_start2.hash()})
-        block.tbr_dict.update({"Store Location":blockchain.head_start2.store_location})
 
 
-        result2 = transactions.insert_one(block.tbr_dict)
-        blockchain.head_start2 = blockchain.head_start2.next
+##    #upadating dictionary
+##    while blockchain.head_start2 != None:
+##        print("ADDING TO DICTIONARY")
+##        block.tbr_dict.update({"_id":blockchain.head_start2._id})
+##        block.tbr_dict.update({"Items purchased":blockchain.head_start2.data})
+##        block.tbr_dict.update({"Timestamp":blockchain.head_start2.timestamp})
+##        block.tbr_dict.update({"Transaction hash":blockchain.head_start2.hash()})
+##        block.tbr_dict.update({"Store Location":blockchain.head_start2.store_location})
+##
+##
+##        result2 = transactions.insert_one(block.tbr_dict)
+##        blockchain.head_start2 = blockchain.head_start2.next
 
     #print("New counter value after 3 transactions: ", blockchain.block.counter)
 
@@ -156,16 +155,16 @@ def main():
 
     print()
     if (answer == "id"):
-        # searching by block number
-        x = input("Enter which transaction ID you would like to display: ")
+        # searching the database by transaction number
+        answer = input("Enter which transaction ID you would like to display: ")
 
         # Error checking for ID to be an int
-        while x.isdigit() == False:
+        while answer.isdigit() == False:
             print("ERROR please enter an int for ID")
-            x = input("Enter which transaction ID you would like to display: ")
+            answer = input("Enter which transaction ID you would like to display: ")
         ## turns x into int
-        if x.isdigit():
-            x = int(x)
+        if answer.isdigit():
+            answer = int(answer)
 
         i = 0
         # Print the selected block
@@ -174,13 +173,19 @@ def main():
         #    print()
         #    main()
 
-        while i < x:
-            blockchain.head = blockchain.head.next
-            i += 1
-            print()
-        print("Displaying information for transaction ID: ", x)
-        print()
-        print(blockchain.head)
+        
+        results = transactions.find({"_id":answer})
+        print("Displaying information for transaction ID: ", answer)
+        for x in results:
+            print(x)
+        
+##        while i < x:
+##            blockchain.head = blockchain.head.next
+##            i += 1
+##            print()
+##        print("Displaying information for transaction ID: ", x)
+##        print()
+##        print(blockchain.head)
 
     elif (answer == "date"):
         # searching by date
