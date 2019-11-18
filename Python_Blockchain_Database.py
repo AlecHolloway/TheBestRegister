@@ -12,7 +12,7 @@ import pymongo
 import motor
 
 client = pymongo.MongoClient("mongodb+srv://chapiiin:password20@cluster0-6dsmr.gcp.mongodb.net/test?retryWrites=true&w=majority")
-db = client.test
+db = client.TBR
 
 # Database imports
 # from bigchaindb_driver import BigchainDB
@@ -29,8 +29,12 @@ class Block:
     timestamp = datetime.datetime.now()
     store_location = "601 Critz Street Starkville, MS"
 
-    trans_id = 0
+    tbr_dict = {
+        }
 
+    #trans_id = 0
+    _id = 0
+    
     def __init__(self, data):
         self.data = data
 
@@ -42,14 +46,14 @@ class Block:
             str(self.previous_hash).encode('utf-8') +
             str(self.timestamp).encode('utf-8') +
             str(self.blockNo).encode('utf-8') +
-            str(self.trans_id).encode('utf-8')
+            str(self._id).encode('utf-8')
         )
         return h.hexdigest()
 
     def __str__(self):
         return "Block Hash: " + str(self.hash()) + "\nTransaction ID: " + str(self.blockNo) + "\nBlock Data: " + str(
             self.data) + "\nTimestamp: " + str(
-            self.timestamp) + "\nTransaction ID: " + str(self.trans_id) + "\nStore Location: " + str(
+            self.timestamp) + "\nTransaction ID: " + str(self._id) + "\nStore Location: " + str(
             self.store_location) + "\n--------------"
 
 
@@ -61,16 +65,18 @@ class Blockchain:
     block = Block("Genesis")
     dummy = head = block
     head_start = head
+    head_start2 = head
 
     def add(self, block):
         #Counter variable
         #block.counter = self.block.counter + 1
         
-        block.trans_id = self.block.trans_id + 1
+        block._id = self.block._id + 1
 
         block.previous_hash = self.block.hash()
         block.blockNo = self.block.blockNo + 1
 
+        
         self.block.next = block
         self.block = self.block.next
 
@@ -88,17 +94,18 @@ class Blockchain:
 
 def main():
     #printing contents of database
-    posts = db.posts
-    scotts_posts = posts.find({'author': 'Scott'})
-    print(scotts_posts)
-   
-    for post in scotts_posts:
-            print(post)
+    #posts = db.posts
+##    scotts_posts = posts.find({'author': 'Scott'})
+##    print(scotts_posts)
+##   
+##    for post in scotts_posts:
+##            print(post)
 
             
     block = Block(0)
     blockchain = Blockchain()
     print("Current time:", block.timestamp)
+    
     #counter = 0
 
     # add data to the blockchain
@@ -111,6 +118,19 @@ def main():
     blockchain.add(Block("Pairs: $2.23"))
     
 
+    tbr_dict = block.tbr_dict
+    transactions = db.transactions
+    
+    while blockchain.head_start2 != None:
+        print("ADDING TO DICTIONARY")
+        block.tbr_dict.update({"_id":blockchain.head_start2._id})
+        block.tbr_dict.update({"Block data":blockchain.head_start2.data})
+        block.tbr_dict.update({"Timestamp":blockchain.head_start2.timestamp})
+        block.tbr_dict.update({"Store Location":blockchain.head_start2.store_location})
+
+
+        result2 = transactions.insert_one(block.tbr_dict)
+        blockchain.head_start2 = blockchain.head_start2.next
 
     #print("New counter value after 3 transactions: ", blockchain.block.counter)
 
@@ -236,36 +256,70 @@ def main():
 
     #Testing the database
         #Inserting data into the DB
+    
         posts = db.posts
-        
+##        
         post_1 = {
             'title': 'Python and MongoDB',
-            'content': 'PyMongo is fun, you guys',
-            'author': 'Scott'
+            'content': 'murder me',
+            'author': 'Connor'
         }
-        post_2 = {
-            'title': 'Virtual Environments',
-            'content': 'Use virtual environments, you guys',
-            'author': 'Scott'
-        }
-        post_3 = {
-            'title': 'Learning Python',
-            'content': 'Learn Python, it is easy',
-            'author': 'Bill'
-        }
-        new_result = posts.insert_many([post_1, post_2, post_3])
-        print('Multiple posts: {0}'.format(new_result.inserted_ids))
+        result = posts.insert_one(post_1)
+        
+##        post_2 = {
+##            'title': 'Virtual Environments',
+##            'content': 'Use virtual environments, you guys',
+##            'author': 'Scott'
+##        }
+##        post_3 = {
+##            'title': 'Learning Python',
+##            'content': 'Learn Python, it is easy',
+##            'author': 'Bill'
+##        }
+##        new_result = posts.insert_many([post_1, post_2, post_3])
+##        print('Multiple posts: {0}'.format(new_result.inserted_ids))
 
+
+###############################################################################
+
+    #inserting our own information into the DB
+        #transactions = db.transactions
+        #result2 = transactions.insert_one(block.tbr_dict)
+
+##        while blockchain.head_start2 != None:
+##            print("---ADDING: ", blockchain.head_start2, " to the DB")
+##            new_result2 = db.insert_one(blockchain.head_start2)
+##            #print('One blockchain: {0}'.format(new_result2.inserted_id))
+##            blockchain.head_start2 = blockchain.head_start2.next
+        
+
+##        while blockchain.head_start2 != None:
+##            print("---ADDING: 'post_1' to the DB")
+##            
+##            print('One blockchain: {0}'.format(new_result2.inserted_id))
+##            blockchain.head_start2 = blockchain.head_start2.next
+##    #retrieving our data from the DB
+
+
+#################################################################################
+            
     #Retrieving data from the DB
         #Finds one post from DB
-        bills_post = posts.find_one({'author': 'Bill'})
-        print(bills_post)
-        #Finds multiple posts from DB
-        scotts_posts = posts.find({'author': 'Scott'})
-        print(scotts_posts)
-            #iterate over the data to print to screen
-        for post in scotts_posts:
-            print(post)
+##        bills_post = posts.find_one({'author': 'Bill'})
+##        print(bills_post)
+##        #Finds multiple posts from DB
+##        scotts_posts = posts.find({'author': 'Scott'})
+##        print(scotts_posts)
+##            #iterate over the data to print to screen
+##        for post in scotts_posts:
+##            print(post)
+
+
+        print("------printing dictionary------")
+        for key, val in tbr_dict.items():
+            print("Key: ", key)
+            print("Val: ", val)
+            print()
         
     else:
         print("ERROR: INVALID INPUT")
