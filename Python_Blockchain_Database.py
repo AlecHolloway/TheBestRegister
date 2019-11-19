@@ -6,17 +6,10 @@ from datetime import datetime as dt
 
 #imports for database
 import pymongo
-#from pymongo import MongoClient
-#client = MongoClient()
-
 import motor
 
 client = pymongo.MongoClient("mongodb+srv://chapiiin:password20@cluster0-6dsmr.gcp.mongodb.net/test?retryWrites=true&w=majority")
 db = client.TBR
-
-# Database imports
-# from bigchaindb_driver import BigchainDB
-# from bigchaindb_driver.crypto import generate_keypair
 
 
 class Block:
@@ -68,10 +61,7 @@ class Blockchain:
     head_start = head
     head_start2 = head
 
-    def add(self, block):
-        #Counter variable
-        #block.counter = self.block.counter + 1
-        
+    def add(self, block):        
         block._id = self.block._id + 1
 
         block.previous_hash = self.block.hash()
@@ -92,67 +82,63 @@ class Blockchain:
             else:
                 block.nonce += 1
 
-
-def main():
-    #hard coded counter
-    counter = 4
+#Function to delete all data from the database
+def empty_database():
+    transactions = db.transactions
+    print("Emptying database")
+    result = transactions.delete_many({})
+    print()
+    print("Sleeping")
+    print()
+    time.sleep(1000)
     
+def main():
+    #BE CAREFUL UNCOMMENTING NEXT LINE
+#####empty_database()
+
     print()
     transactions = db.transactions
     date_range_array = []
     
-
-    #Finds all posts from DB
-##    print()
-##    print()
-##    print("---Print all contents of the database---")
-##    results = transactions.find({})
-##    #iterate over the data to print to screen
-##    for x in results:
-##        print(x)
-            
-
-##    print("Sleeping")
-##    time.sleep(120)
-    
-
+    #make classes callable
     block = Block(0)
     blockchain = Blockchain()
     print()
     print("----------Program Running----------")
     print("Current date:", block.timestamp)
-    print()
-    
-    #counter = 0
+    print()   
 
-##    # add data to the blockchain
-##    blockchain.add(Block("Apples : $4.45"))
-##    
-##    # time.sleep(1)
-##    blockchain.add(Block("Oranges : $6.54"))
-##    
-##    # time.sleep(1)
-##    blockchain.add(Block("Pairs: $2.23"))
-    
-
+    #make dictionary callable
     tbr_dict = block.tbr_dict
     transactions = db.transactions
 
-
-##    #upadating dictionary and pushing transactions to database
-##    while blockchain.head_start2 != None:
-##        print("ADDING TO DICTIONARY")
-##        block.tbr_dict.update({"_id":blockchain.head_start2._id})
-##        block.tbr_dict.update({"Items purchased":blockchain.head_start2.data})
-##        block.tbr_dict.update({"Timestamp":blockchain.head_start2.timestamp})
-##        block.tbr_dict.update({"Transaction hash":blockchain.head_start2.hash()})
-##        block.tbr_dict.update({"Store Location":blockchain.head_start2.store_location})
-##
-##
-##        result2 = transactions.insert_one(block.tbr_dict)
-##        blockchain.head_start2 = blockchain.head_start2.next
+    #function to add entire blockchain to database
+    def update_database(counter):       
+        #add data to the blockchain
+        blockchain.add(Block("Apples : $4.45"))
+        blockchain.add(Block("Oranges : $6.54"))
+        blockchain.add(Block("Pairs: $2.23"))
+        blockchain.add(Block("Bananas: $3.57"))
         
-    #print("New counter value after 3 transactions: ", blockchain.block.counter)
+        #updating dictionary and pushing transactions to database
+        while blockchain.head_start2 != None:
+            print("ADDING TO DICTIONARY")
+            block.tbr_dict.update({"_id":blockchain.head_start2._id})
+            block.tbr_dict.update({"Items purchased":blockchain.head_start2.data})
+            block.tbr_dict.update({"Timestamp":blockchain.head_start2.timestamp})
+            block.tbr_dict.update({"Transaction hash":blockchain.head_start2.hash()})
+            block.tbr_dict.update({"Store Location":blockchain.head_start2.store_location})
+            counter += 1
+
+            result2 = transactions.insert_one(block.tbr_dict)
+            blockchain.head_start2 = blockchain.head_start2.next
+        print("Counter value: ", counter)
+    #function call to update the database
+    #update_database(-1)
+
+    #temporary counter
+    counter = 4
+    
 
 
     # Give choice of searching by date or transaction ID
@@ -167,18 +153,19 @@ def main():
 
         # Error checking for ID to be an int
         while answer.isdigit() == False:
-            print("ERROR please enter an int for ID")
+            print("ERROR: Please enter a positive valid integer for transaction ID")
             answer = input("Enter which transaction ID you would like to display: ")
         ## turns x into int
         if answer.isdigit():
             answer = int(answer)
 
         i = 0
-        # Print the selected block
-        #if x > blockchain.block.counter:
-        #    print("ERROR: out of range")
-        #    print()
-        #    main()
+        # Error checking for ID to be within valid range
+        if answer > counter:
+            print("ERROR: Transaction ID out of range")
+            print(counter, " is not a valid transaction ID")
+            print()
+            main()
 
         
         results = transactions.find({"_id":answer})
@@ -190,7 +177,7 @@ def main():
         # searching by date
         # declare variables for start and end date
         i = 0.0
-        x = str(input("Enter the start date as Month Day, Year (Ex: November 18, 2019): "))
+        x = str(input("Enter the start date as Month Day, Year (Ex: November 18, 2019) **Start date is inclusive**: "))
         y = str(input("Enter the end date as Month Day, Year (Ex: November 19, 2019) **End date is non-inclusive**: "))
         print()
 
@@ -248,11 +235,16 @@ def main():
         print()
         z = 0
         i = 0
+        executed = False
         for i in range(len(date_range_array)):     
             search = transactions.find({'Timestamp': date_range_array[i]})
             for match in search:
                 print(match)
+                executed = True
             i += 1
+
+        if executed == False:
+            print("**NO TRANSACTIONS OCCURRED DURING THIS TIME RANGE**")
         print()
         print()
         
@@ -285,6 +277,16 @@ def main():
 ##            #iterate over the data to print to screen
 ##        for post in scotts_posts:
 ##            print(post)
+
+
+#Prints all posts from DB
+##    print()
+##    print()
+##    print("---Print all contents of the database---")
+##    results = transactions.find({})
+##    #iterate over the data to print to screen
+##    for x in results:
+##        print(x)
         
     else:
         print("ERROR: INVALID INPUT")
