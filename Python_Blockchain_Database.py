@@ -26,7 +26,8 @@ class Block:
     hash = None
     nonce = 0
     previous_hash = 0x0
-    timestamp = datetime.datetime.now()
+    dt = datetime.datetime.now()
+    timestamp = dt.strftime("%B %d, %Y")
     store_location = "601 Critz Street Starkville, MS"
 
     tbr_dict = {
@@ -93,9 +94,12 @@ class Blockchain:
 
 
 def main():
+    #hard coded counter
+    counter = 4
+    
     print()
     transactions = db.transactions
-    
+    date_range_array = []
     
 
     #Finds all posts from DB
@@ -114,11 +118,14 @@ def main():
 
     block = Block(0)
     blockchain = Blockchain()
-    print("Current time:", block.timestamp)
+    print()
+    print("----------Program Running----------")
+    print("Current date:", block.timestamp)
+    print()
     
     #counter = 0
 
-    # add data to the blockchain
+##    # add data to the blockchain
 ##    blockchain.add(Block("Apples : $4.45"))
 ##    
 ##    # time.sleep(1)
@@ -132,7 +139,7 @@ def main():
     transactions = db.transactions
 
 
-##    #upadating dictionary
+##    #upadating dictionary and pushing transactions to database
 ##    while blockchain.head_start2 != None:
 ##        print("ADDING TO DICTIONARY")
 ##        block.tbr_dict.update({"_id":blockchain.head_start2._id})
@@ -144,7 +151,7 @@ def main():
 ##
 ##        result2 = transactions.insert_one(block.tbr_dict)
 ##        blockchain.head_start2 = blockchain.head_start2.next
-
+        
     #print("New counter value after 3 transactions: ", blockchain.block.counter)
 
 
@@ -178,78 +185,79 @@ def main():
         print("Displaying information for transaction ID: ", answer)
         for x in results:
             print(x)
-        
-##        while i < x:
-##            blockchain.head = blockchain.head.next
-##            i += 1
-##            print()
-##        print("Displaying information for transaction ID: ", x)
-##        print()
-##        print(blockchain.head)
 
     elif (answer == "date"):
         # searching by date
         # declare variables for start and end date
         i = 0.0
-        x = str(input("Enter the start date (yyyy-mm-dd): "))
-        y = str(input("Enter the end date (yyyy-mm-dd): "))
+        x = str(input("Enter the start date as Month Day, Year (Ex: November 18, 2019): "))
+        y = str(input("Enter the end date as Month Day, Year (Ex: November 19, 2019) **End date is non-inclusive**: "))
         print()
 
         # print list of dates within range
-        start = datetime.datetime.strptime(x, "%Y-%m-%d")
-        end = datetime.datetime.strptime(y, "%Y-%m-%d")
+        start = datetime.datetime.strptime(x, "%B %d, %Y")
+        end = datetime.datetime.strptime(y, "%B %d, %Y")
         date_array = \
             (start + datetime.timedelta(days=x) for x in range(0, (end - start).days))
 
         # Date of transactions within range entered
         for date_object in date_array:
-            print(date_object.strftime("%Y-%m-%d"))
+            #print(date_object.strftime("%B %d, %Y"))
+            date_object.strftime("%B %d, %Y")
+            date_range_array.append(date_object.strftime("%B %d, %Y"))
 
-        # Change blockchain timestamps into strings
-        ##        while blockchain.head != None:
-        ##            date_str = str(blockchain.head.timestamp)
-        ##            date = date_str[:10]
-        ##            print("Timestamps as strings: ", date)
-        ##            #move to next block
-        ##            blockchain.head = blockchain.head.next
+        print()
 
-        date_str = str(blockchain.head.timestamp)
-        date = date_str[:10]
+#prints dates within user selected date range
+##        print("Printing date_range_array")
+##        z = 0
+##        i = 0
+##        for z in range(len(date_range_array)):
+##            print(date_range_array[i])
+##            i += 1
+
+        
+                
         # print("Printing each block timestamp", blockchain.head.timestamp)
 
         # Compare the start date
-        start_date = dt.strptime(x, "%Y-%m-%d")
-        iter_date = dt.strptime(date, "%Y-%m-%d")
-        end_date = dt.strptime(y, "%Y-%m-%d")
-
+        start_date = dt.strptime(x, "%B %d, %Y")
+        iter_date = "November 18, 2019"
+        end_date = dt.strptime(y, "%B %d, %Y")
+    
+        #truncate start date string
+        #start_date = start_date[:10]
+        
         # Error checking to see if start day is valid
         if start_date > end_date:
             print("ERROR: Start date cannot be greater than end date.")
             print()
             print()
             main()
-
+        if start_date == end_date:
+            print("ERROR: End date must be at least one day later than the start date.")
+            print()
+            print()
+            main()
         # Search for the first transaction within the selected range
-        while iter_date < start_date:
-            print()
-            print("Comparing start date to iteration.")
-            print("Start date: ", start_date, "Iteration date: ", date)
-            blockchain.head_start = blockchain.head_start.next
+        #while iter_date < start_date:
+        #    print()
+ 
+        print()    
+        print("-----Displaying information for the purchases made on or after ", x, " and before ", y, "-----")
+        print()
+        z = 0
+        i = 0
+        for i in range(len(date_range_array)):     
+            search = transactions.find({'Timestamp': date_range_array[i]})
+            for match in search:
+                print(match)
+            i += 1
+        print()
+        print()
+        
 
-        # Display the transactions withing the selected range
-        n = 0
-        while iter_date <= end_date:
-            print()
-            print("Comparing iteration to end date.")
-            print(blockchain.head_start.timestamp, " is within the range.")
-            print("Iteration date: ", iter_date, "End date: ", end_date)
-            print(blockchain.head_start)
-            blockchain.head_start = blockchain.head_start.next
-            n += 1
-            if n >= 4:
-                break
-
-        # add data to the blockchain
+# add data to the blockchain
 ##        blockchain.add(Block("Cucumbers : $5.69"))
 
         ##        #Print entire blockchain
@@ -260,69 +268,14 @@ def main():
         ##            print(blockchain.head_start)
         ##            blockchain.head_start = blockchain.head_start.next
 
-        print("Displaying information for the purchases made on or after ", x, " and before ", y)
-
-    ##    #Printing blocks within date range
-    ##    for date_object in date_array:
-    ##        print(date_object.strftime("%Y-%m-%d"))
-    ##        while start != self.timestamp
-
-    # Print entire blockchain
+# Print entire blockchain
     ##    while blockchain.head != None:
     ##        print(blockchain.head)
     ##        blockchain.head = blockchain.head.next
 
 
-    #Testing the database
-        #Inserting data into the DB
-    
-        posts = db.posts
-##        
-        post_1 = {
-            'title': 'Python and MongoDB',
-            'content': 'murder me',
-            'author': 'Connor'
-        }
-        result = posts.insert_one(post_1)
-        
-##        post_2 = {
-##            'title': 'Virtual Environments',
-##            'content': 'Use virtual environments, you guys',
-##            'author': 'Scott'
-##        }
-##        post_3 = {
-##            'title': 'Learning Python',
-##            'content': 'Learn Python, it is easy',
-##            'author': 'Bill'
-##        }
-##        new_result = posts.insert_many([post_1, post_2, post_3])
-##        print('Multiple posts: {0}'.format(new_result.inserted_ids))
-
-
-###############################################################################
-
-    #inserting our own information into the DB
-        #transactions = db.transactions
-        #result2 = transactions.insert_one(block.tbr_dict)
-
-##        while blockchain.head_start2 != None:
-##            print("---ADDING: ", blockchain.head_start2, " to the DB")
-##            new_result2 = db.insert_one(blockchain.head_start2)
-##            #print('One blockchain: {0}'.format(new_result2.inserted_id))
-##            blockchain.head_start2 = blockchain.head_start2.next
-        
-
-##        while blockchain.head_start2 != None:
-##            print("---ADDING: 'post_1' to the DB")
-##            
-##            print('One blockchain: {0}'.format(new_result2.inserted_id))
-##            blockchain.head_start2 = blockchain.head_start2.next
-##    #retrieving our data from the DB
-
-
-#################################################################################
             
-    #Retrieving data from the DB
+#Retrieving data from the DB
         #Finds one post from DB
 ##        bills_post = posts.find_one({'author': 'Bill'})
 ##        print(bills_post)
@@ -332,13 +285,6 @@ def main():
 ##            #iterate over the data to print to screen
 ##        for post in scotts_posts:
 ##            print(post)
-
-
-        print("------printing dictionary------")
-        for key, val in tbr_dict.items():
-            print("Key: ", key)
-            print("Val: ", val)
-            print()
         
     else:
         print("ERROR: INVALID INPUT")
@@ -355,5 +301,6 @@ main()
 
 # Reference used: https://github.com/howCodeORG/Simple-Python-Blockchain/blob/master/blockchain.py
 # Reference used: https://stackoverflow.com/questions/20365854/comparing-two-date-strings-in-python
+# Reference used: https://thispointer.com/python-how-to-convert-datetime-object-to-string-using-datetime-strftime/
 # Instructions to access database: https://realpython.com/introduction-to-mongodb-and-python/
 
