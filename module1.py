@@ -1,4 +1,4 @@
-import login
+#import login
 import sys
 from TBRproject import Block,Blockchain, database, search
 from datetime import datetime as dt
@@ -22,7 +22,7 @@ layout = [[sg.Text('', size=(20,1),font='Helvetica, 18', text_color='red',key='o
           [sg.Button('Jogger', size=(10,1)), sg.Button('Total', size=(10,1))],
           [sg.Button('Submit',size=(10,1)), sg.Button('Add Item', size=(10,1)), sg.Button('Remove Item', size=(10,1)), sg.Button('Clear')],
 
-          [sg.Button('BlockChain',size=(10,1))]]
+          [sg.Button('History',size=(10,1))]]
           
 
 window = sg.Window('THE BEST REGISTER', layout, default_button_element_size=(5,2), auto_size_buttons=False)
@@ -96,14 +96,13 @@ while True:
     elif event == 'Remove Item':
         keys_entered = values['input']
         sum -= float(keys_entered)
-        window['out'].update(sum)  
+        window['out'].update(sum)
+        #added to remove last item from array of items being bought
+        del listObject[-1]
         
-    elif event == 'BlockChain':
-        answer = str(input("Would you like to search by date or by transaction ID (enter 'date' or 'id'): "))
-        if (answer == "id"):
-            search.search_id()
-        elif (answer == "date"):
-            search.search_date
+        
+    elif event == 'History':
+        search.search()
             
 
     

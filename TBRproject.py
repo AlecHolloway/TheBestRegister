@@ -60,6 +60,7 @@ class Blockchain:
     dummy = head = block
     head_start = head
     head_start2 = head
+    head_start3 = head
 
     def add(self, block):        
         block._id = self.block._id + 1
@@ -71,7 +72,7 @@ class Blockchain:
         self.block.next = block
         self.block = self.block.next
 
-        print("---transaction added---")
+        #print("---transaction added---")
 
     def mine(self, block):
         for n in range(self.maxNonce):
@@ -81,7 +82,7 @@ class Blockchain:
                 break
             else:
                 block.nonce += 1
-
+            
 
 
 class database: 
@@ -111,21 +112,58 @@ class database:
             #blockchain.add(Block("Oranges : $6.54"))
             #blockchain.add(Block("Pairs: $2.23"))
             #blockchain.add(Block("Bananas: $3.57"))
-            blockchain.add(Block(items))
+            
 
+            #Find the last transaction
+            last_doc = transactions.find().sort('_id', pymongo.DESCENDING).limit(1)
+            #print("Last doc: ", last_doc)
+
+            #Find the last transaction ID
+            for x in last_doc:
+                print("Last transaction: ", x)
+            last_id = x["_id"]
+            #print("Last ID: ", last_id)
+
+            for i in range(last_id):
+            #    print(i, " non-existent block added")
+                blockchain.add(Block("Null data"))
+
+            #print("blockchain head data before: ", blockchain.head_start2.data)
             #updating dictionary and pushing transactions to database
-            while blockchain.head_start2 != None:
-                print("ADDING TO DICTIONARY")
-                block.tbr_dict.update({"_id":blockchain.head_start2._id})
-                block.tbr_dict.update({"Items purchased":blockchain.head_start2.data})
-                block.tbr_dict.update({"Timestamp":blockchain.head_start2.timestamp})
-                block.tbr_dict.update({"Transaction hash":blockchain.head_start2.hash()})
-                block.tbr_dict.update({"Store Location":blockchain.head_start2.store_location})
-                counter += 1
-
-                result2 = transactions.insert_one(block.tbr_dict)
+            while blockchain.head_start2._id != last_id:
+            #    print("--MOVING HEAD TO LAST BLOCK IN BLOCKCHAIN--")
+            #    print("Blockchain head id during: ", blockchain.head_start2._id)
+            #    print("Last id: ", last_id)
+            #    print("blockchain head data during: ", blockchain.head_start2.data)
                 blockchain.head_start2 = blockchain.head_start2.next
-            print("Counter value: ", counter)
+                print()
+            #print("Blockchain head id after: ", blockchain.head_start2._id)
+            #print("Blockchain head data after loop: ", blockchain.head_start2.data)
+            #print("Last id: ", last_id)    
+            
+        
+            #add new transaction to blockchain
+            blockchain.add(Block(items))
+            #print("Blockchain head data after adding trans: ", blockchain.head_start2.data)
+
+            #move to new transaction
+            while blockchain.head_start3._id != last_id + 1:
+                blockchain.head_start3 = blockchain.head_start3.next
+
+            #print("Blockchain head data after new head loop: ", blockchain.head_start3.data)
+            #update dictionary with new transaction
+            print("-ADDING TO DATABASE-")
+            block.tbr_dict.update({"_id":blockchain.head_start3._id})
+            print("Data being added: ", blockchain.head_start3.data)
+            block.tbr_dict.update({"Items purchased":blockchain.head_start3.data})
+            block.tbr_dict.update({"Timestamp":blockchain.head_start3.timestamp})
+            block.tbr_dict.update({"Transaction hash":blockchain.head_start3.hash()})
+            block.tbr_dict.update({"Store Location":blockchain.head_start3.store_location})
+            counter += 1
+            #push transaction to database
+            result2 = transactions.insert_one(block.tbr_dict)
+                
+            #print("Counter value: ", counter)
         #function call to update the database
         #update_database(-1)
 
@@ -172,11 +210,11 @@ class search:
 
             i = 0
             # Error checking for ID to be within valid range
-            if answer > counter:
-                print("ERROR: Transaction ID out of range")
-                print(counter, " is not a valid transaction ID")
-                print()
-                main()
+##            if answer > counter:
+##                print("ERROR: Transaction ID out of range")
+##                print(counter, " is not a valid transaction ID")
+##                print()
+##                main()
 
         
             results = transactions.find({"_id":answer})
@@ -231,12 +269,12 @@ class search:
                 print("ERROR: Start date cannot be greater than end date.")
                 print()
                 print()
-                main()
+                #search()
             if start_date == end_date:
                 print("ERROR: End date must be at least one day later than the start date.")
                 print()
                 print()
-                main()
+                #search()
             # Search for the first transaction within the selected range
             #while iter_date < start_date:
             #    print()
@@ -303,11 +341,11 @@ class search:
             print("ERROR: INVALID INPUT")
             print()
             print()
-            main()
+            #search()
 
         print()
         print()
-        main()
+        #search()
 
 
     ##main()
