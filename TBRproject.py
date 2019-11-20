@@ -18,6 +18,8 @@ class Block:
     next = None
     hash = None
     nonce = 0
+    cost = 0
+    payment = None
     previous_hash = 0x0
     dt = datetime.datetime.now()
     timestamp = dt.strftime("%B %d, %Y")
@@ -29,8 +31,10 @@ class Block:
     #trans_id = 0
     _id = 0
     
-    def __init__(self, data):
+    def __init__(self, data, cost, payment):
         self.data = data
+        self.cost = cost
+        self.payment = payment
 
     def hash(self):
         h = hashlib.sha256()
@@ -40,7 +44,8 @@ class Block:
             str(self.previous_hash).encode('utf-8') +
             str(self.timestamp).encode('utf-8') +
             str(self.blockNo).encode('utf-8') +
-            str(self._id).encode('utf-8')
+            str(self._id).encode('utf-8') +
+            str(self.payment).encode('utf-8')
         )
         return h.hexdigest()
 
@@ -48,7 +53,7 @@ class Block:
         return "Block Hash: " + str(self.hash()) + "\nTransaction ID: " + str(self.blockNo) + "\nBlock Data: " + str(
             self.data) + "\nTimestamp: " + str(
             self.timestamp) + "\nTransaction ID: " + str(self._id) + "\nStore Location: " + str(
-            self.store_location) + "\n--------------"
+            self.store_location) + "\nCost: " + int(self.cost) + "\nPayment: " + str(self.payment) + "\n--------------"
 
 
 class Blockchain:
@@ -56,11 +61,12 @@ class Blockchain:
     maxNonce = 2 ** 32
     target = 2 ** (256 - diff)
 
-    block = Block("Genesis")
+    block = Block("Genesis", 0, 0)
     dummy = head = block
     head_start = head
     head_start2 = head
     head_start3 = head
+    
 
     def add(self, block):        
         block._id = self.block._id + 1
@@ -86,7 +92,7 @@ class Blockchain:
 
 
 class database: 
-    block = Block(0)
+    block = Block(0, 0, 0)
     blockchain = Blockchain()
     #make dictionary callable
     tbr_dict = block.tbr_dict
@@ -102,9 +108,9 @@ class database:
         time.sleep(1000)
 
     #function to add entire blockchain to database
-    def update_database(counter, items):   
+    def update_database(counter, items, cost, payment):   
             blockchain = Blockchain()
-            block = Block(0)
+            block = Block(0,0,0)
             tbr_dict = block.tbr_dict
             transactions = db.transactions
             #add data to the blockchain
@@ -119,6 +125,7 @@ class database:
             #print("Last doc: ", last_doc)
 
             #Find the last transaction ID
+
             for x in last_doc:
                 print("Last transaction: ", x)
             last_id = x["_id"]
@@ -126,7 +133,7 @@ class database:
 
             for i in range(last_id):
             #    print(i, " non-existent block added")
-                blockchain.add(Block("Null data"))
+                blockchain.add(Block("Null data", 0,0))
 
             #print("blockchain head data before: ", blockchain.head_start2.data)
             #updating dictionary and pushing transactions to database
@@ -143,7 +150,7 @@ class database:
             
         
             #add new transaction to blockchain
-            blockchain.add(Block(items))
+            blockchain.add(Block(items,cost,payment))
             #print("Blockchain head data after adding trans: ", blockchain.head_start2.data)
 
             #move to new transaction
@@ -159,6 +166,8 @@ class database:
             block.tbr_dict.update({"Timestamp":blockchain.head_start3.timestamp})
             block.tbr_dict.update({"Transaction hash":blockchain.head_start3.hash()})
             block.tbr_dict.update({"Store Location":blockchain.head_start3.store_location})
+            block.tbr_dict.update({"Cost":blockchain.head_start3.cost})
+            block.tbr_dict.update({"Payment Method":blockchain.head_start3.payment})
             counter += 1
             #push transaction to database
             result2 = transactions.insert_one(block.tbr_dict)
