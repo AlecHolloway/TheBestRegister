@@ -64,14 +64,14 @@ def PrintAcc():
 
 
 
-def login_check(un,pw):
+def LoginCheck(un,pw):
     results = user.find()
     for key in results:
         if(un == key['_id'] and PasswordMatches(key['Password hash'], pw)):
             return True
 
 
-def UsernameEnter():
+def UserLogin():
     layout2 = [
         [sg.Text('Username entry screen', size=(30,1), font ='Any 15')],
         [sg.Text('Username'), sg.Input(key='-username-')],
@@ -92,11 +92,11 @@ def UsernameEnter():
         username = input['-username-']
         password = input['-password-']
         #RemoveAccount('admin')
-        if login_check(username, password) and ev1 in ('Login'):
+        if LoginCheck(username, password) and ev1 in ('Login'):
             un.Close()
             return True
         
-        elif not login_check(username, password) and ev1 in ('Login'):
+        elif not LoginCheck(username, password) and ev1 in ('Login'):
             inval = [
                 [sg.Text('Invalid credentials provided. Please try again.')],
                 [sg.Button('Ok')]
@@ -113,7 +113,7 @@ def UsernameEnter():
 
 
 def main():
-    UsernameEnter()
+    UserLogin()
 
 
 if __name__ == '__main__':
