@@ -61,6 +61,7 @@ def main():
     access = False
     windowItemActive = False
     windowPayActive = False
+    windowReceiptActive = False
     
     # Login event loop
     while True:
@@ -183,7 +184,7 @@ def main():
             
             if eventItem in ('Hoodie', 'Sweatshirt', 'T-shirt', 'Cap', 'Jogger'):
                 priceValue = priceDict[eventItem][1]
-                receiptEntry = eventItem + '\t\t' + priceValue
+                receiptEntry = '(' + priceDict[eventItem][0] + ')  ' + eventItem + '  ' + priceValue
                 
                 priceSum += float(priceValue)
                 windowMain.Element('_TOTAL_').Update("{0:.2f}".format(priceSum))
@@ -193,7 +194,7 @@ def main():
                 windowMain.Element('_DISPLAY_').Update(listOutput(receiptList))
                 
         
-        # Payment type selection window event loop
+        # Payment window event loop
         while windowPayActive:
             eventPay, valuesPay = windowPay.Read()
             
@@ -207,7 +208,7 @@ def main():
             
                 transactionCount += 1
                 
-                historyEntry['TransactionID'] = transactionCount
+                historyEntry['TransactionID'] = str(transactionCount)
                 historyEntry['Timestamp'] = str(dt.now())
                 historyEntry['PaymentTotal'] = "{0:.2f}".format(priceSum)
                 historyEntry['PaymentInfo'] = payMethod
@@ -219,15 +220,39 @@ def main():
                 windowMain.Element('_LABEL_').Update('Transaction: ')
                 windowMain.Element('_DISPLAY_').Update(['Added to History'])
                 
+                # Close window after selection
+                windowPayActive = False
+                windowPay.Close()
+                
+                # Print receipt
+                layoutReceipt = [
+                                 [sg.Text('Transaction ID:\t' + historyEntry['TransactionID'])],
+                                 [sg.Text('Date:\t' + historyEntry['Timestamp'])],
+                                 [sg.Text('Store:\t' + historyEntry['Location'])],
+                                 [sg.Text('Paid with:\t' + historyEntry['PaymentInfo'])],
+                                 [sg.Text(listOutput(receiptList))],
+                                 [sg.Text('Total Purchase:\t' + historyEntry['PaymentTotal'])],
+                                 [sg.Button('EXIT')]
+                                ]
+                      
+                windowReceipt = sg.Window('Receipt', layoutReceipt, default_button_element_size=(6,2), auto_size_buttons=False)
+                windowReceiptActive = True
+                
+                while windowReceiptActive:
+                    eventReceipt, valuesReceipt = windowReceipt.Read()
+                    
+                    if eventReceipt in (None, 'EXIT'):
+                        windowReceiptActive = False
+                        windowReceipt.Close()
+                        break
+                
                 # Reset variables
                 priceSum = 0
                 historyEntry = historyEntry_default
                 itemIDList.clear()
                 receiptList.clear()
                 
-                # Close window after selection
-                windowPayActive = False
-                windowPay.Close()
+                # Exit event loop
                 break
     
 
