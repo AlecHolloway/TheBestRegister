@@ -76,12 +76,14 @@ def main():
     payMethod = 'Cash'
     receiptList = []
     receiptEntry = "ITEM\t\tPRICE"
+    itemIDList = []
     historyEntry = historyEntry_default
     
     # Window setup
     layoutMain = [
-                  [sg.Text('Receipt: ', key='_LABEL_')],
-                  [sg.Multiline('', size=(40,20), key='_ITEM_LIST_')],
+                  [sg.Text('Transaction: ', key='_LABEL_', size=(20,1))],
+                  [sg.Multiline('', size=(40,20), key='_DISPLAY_')],
+                  [sg.Text('Total:', size=(20,1)), sg.Text('0.00', key='_TOTAL_', size=(20,1))],
                   
                   # Manual item entry
                   # [sg.Text('Item: ', size=(20,1), key='_INPUT_LABEL_1_'), sg.Text('Price: ', size=(20,1), key='_INPUT_LABEL_2_')],
@@ -96,7 +98,7 @@ def main():
 
     windowMain = sg.Window('The BEST Register', layoutMain, default_button_element_size=(10,2), auto_size_buttons=False)
 
-    # Register event Loop
+    # Register window event Loop
     while True:
         eventMain, valuesMain = windowMain.Read()
         
@@ -110,16 +112,24 @@ def main():
         
         # Scanning items
         if eventMain in ('Scan'):
+            windowMain.Element('_LABEL_').Update('Transaction: ')
+            
+            if receiptList != []:
+                windowMain.Element('_DISPLAY_').Update(listOutput(receiptList))
+            else:
+                windowMain.Element('_DISPLAY_').Update('')
+            
             windowItemActive = True
             
             # Window setup
             layoutItem = [
+                          [sg.Text('Exit this window before paying!')],
                           [sg.Button('Sweatshirt'), sg.Button('Hoodie')],
                           [sg.Button('T-shirt'), sg.Button('Cap')],
                           [sg.Button('Jogger'), sg.Button('EXIT')]
                          ]
                   
-            windowItem = sg.Window('Preset Items', layoutItem, default_button_element_size=(6,2), auto_size_buttons=False)
+            windowItem = sg.Window('Select Items', layoutItem, default_button_element_size=(6,2), auto_size_buttons=False)
             
             # if valuesMain['_ITEM_IN_'] == '' or valuesMain['_PRICE_IN_'] == '':
                 # sg.PopupError('Need item name and price!')
@@ -130,8 +140,8 @@ def main():
                 # priceSum += priceValue
                 
                 # receiptList.append(receiptEntry)
-                # windowMain.Element('_LABEL_').Update('Receipt: ')
-                # windowMain.Element('_ITEM_LIST_').Update(listOutput(receiptList))
+                # windowMain.Element('_LABEL_').Update('Transaction: ')
+                # windowMain.Element('_DISPLAY_').Update(listOutput(receiptList))
         
         # Completing a transaction
         if eventMain in ('Pay'):
@@ -142,10 +152,10 @@ def main():
                 
                 # Window setup
                 layoutPay = [
-                              [sg.Text('Total:\t\t' + "{0:.2f}".format(priceSum))],
-                              [sg.Button('Cash'), sg.Button('Check')],
-                              [sg.Button('Credit'), sg.Button('Debit')],
-                              [sg.Button('EXIT')]
+                             [sg.Text('Total:\t' + "{0:.2f}".format(priceSum))],
+                             [sg.Button('Cash'), sg.Button('Check')],
+                             [sg.Button('Credit'), sg.Button('Debit')],
+                             [sg.Button('EXIT')]
                             ]
                       
                 windowPay = sg.Window('Preset Items', layoutPay, default_button_element_size=(6,2), auto_size_buttons=False)
@@ -153,7 +163,7 @@ def main():
         # Accessing the transaction history
         if eventMain in ('History'):
             windowMain.Element('_LABEL_').Update('History: ')
-            windowMain.Element('_ITEM_LIST_').Update(historyList)
+            windowMain.Element('_DISPLAY_').Update(historyList)
             
         # Buttons for debugging
         if eventMain in ('receiptList'):
@@ -161,7 +171,8 @@ def main():
         if eventMain in ('historyList'):
             print(f"historyList: {historyList}")
         
-        # Item selection window
+        
+        # Item selection window event loop
         while windowItemActive:
             eventItem, valuesItem = windowItem.Read()
             
@@ -175,12 +186,14 @@ def main():
                 receiptEntry = eventItem + '\t\t' + priceValue
                 
                 priceSum += float(priceValue)
+                windowMain.Element('_TOTAL_').Update("{0:.2f}".format(priceSum))
                 
+                itemIDList.append(priceDict[eventItem][0])
                 receiptList.append(receiptEntry)
-                windowMain.Element('_LABEL_').Update('Receipt: ')
-                windowMain.Element('_ITEM_LIST_').Update(listOutput(receiptList))
+                windowMain.Element('_DISPLAY_').Update(listOutput(receiptList))
                 
-        # Payment type selection window
+        
+        # Payment type selection window event loop
         while windowPayActive:
             eventPay, valuesPay = windowPay.Read()
             
@@ -198,15 +211,18 @@ def main():
                 historyEntry['Timestamp'] = str(dt.now())
                 historyEntry['PaymentTotal'] = "{0:.2f}".format(priceSum)
                 historyEntry['PaymentInfo'] = payMethod
-                historyEntry['Items'] = copy.deepcopy(receiptList)
+                historyEntry['Items'] = copy.deepcopy(itemIDList)
+                
+                windowMain.Element('_TOTAL_').Update("0.00")
                 
                 historyList.append(copy.deepcopy(historyEntry))
-                windowMain.Element('_LABEL_').Update('Receipt: ')
-                windowMain.Element('_ITEM_LIST_').Update(['Added to History'])
+                windowMain.Element('_LABEL_').Update('Transaction: ')
+                windowMain.Element('_DISPLAY_').Update(['Added to History'])
                 
                 # Reset variables
                 priceSum = 0
                 historyEntry = historyEntry_default
+                itemIDList.clear()
                 receiptList.clear()
                 
                 # Close window after selection
