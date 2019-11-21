@@ -87,7 +87,8 @@ def UserLogin():
 
     while True:
         ev1, input = un.Read()
-        if ev1 in (None, 'Exit'):
+        if ev1 is None or ev1 == 'Exit':
+	    un.Close()
             break
 
              
