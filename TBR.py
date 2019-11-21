@@ -8,10 +8,6 @@ else:
 # For copying lists before clearing them
 import copy
 
-# For displaying currency
-from decimal import *
-getcontext().prec = 2
-
 # For recording timestamps
 from datetime import datetime as dt
 
@@ -74,26 +70,28 @@ def main():
         else:
             return
     
-    # Variables
+    # Local variables
     transactionCount = 0
     priceSum = 0
     payMethod = 'Cash'
     receiptList = []
     receiptEntry = "ITEM\t\tPRICE"
-    historyEntry = {
-                   }
+    historyEntry = historyEntry_default
     
     # Window setup
     layoutMain = [
                   [sg.Text('Receipt: ', key='_LABEL_')],
                   [sg.Multiline('', size=(40,20), key='_ITEM_LIST_')],
-                  [sg.Text('Item: ', size=(20,1), key='_INPUT_LABEL_1_'), sg.Text('Price: ', size=(20,1), key='_INPUT_LABEL_2_')],
-                  [sg.Input(size=(20,1), key='_ITEM_IN_', do_not_clear=False), sg.Input(size=(20,1), key='_PRICE_IN_', do_not_clear=False)],
-                  [sg.Button('Scan', bind_return_key=True), sg.Button('Receipt'), sg.Button('History')],
-                  [sg.Button('Choose Items'), sg.Button('EXIT')],
+                  
+                  # Manual item entry
+                  # [sg.Text('Item: ', size=(20,1), key='_INPUT_LABEL_1_'), sg.Text('Price: ', size=(20,1), key='_INPUT_LABEL_2_')],
+                  # [sg.Input(size=(20,1), key='_ITEM_IN_', do_not_clear=False), sg.Input(size=(20,1), key='_PRICE_IN_', do_not_clear=False)],
+                  
+                  [sg.Button('Scan', bind_return_key=True), sg.Button('Pay'), sg.Button('History')],
+                  [sg.Button('EXIT')],
                   
                   # Buttons for debugging
-                  [sg.Button('receiptList'), sg.Button('historyList')]
+                  # [sg.Button('receiptList'), sg.Button('historyList')]
                  ]
 
     windowMain = sg.Window('The BEST Register', layoutMain, default_button_element_size=(10,2), auto_size_buttons=False)
@@ -108,23 +106,35 @@ def main():
         # Closing the window
         if eventMain in (None, 'EXIT'):
             windowMain.Close()
+            break
         
         # Scanning items
         if eventMain in ('Scan'):
-            if valuesMain['_ITEM_IN_'] == '' or valuesMain['_PRICE_IN_'] == '':
-                sg.PopupError('Need item name and price!')
-            else:
-                priceValue = float(valuesMain['_PRICE_IN_'])
-                receiptEntry = valuesMain['_ITEM_IN_'] + '\t\t' + "{0:.2f}".format(priceValue)
+            windowItemActive = True
+            
+            # Window setup
+            layoutItem = [
+                          [sg.Button('Sweatshirt'), sg.Button('Hoodie')],
+                          [sg.Button('T-shirt'), sg.Button('Cap')],
+                          [sg.Button('Jogger'), sg.Button('EXIT')]
+                         ]
+                  
+            windowItem = sg.Window('Preset Items', layoutItem, default_button_element_size=(6,2), auto_size_buttons=False)
+            
+            # if valuesMain['_ITEM_IN_'] == '' or valuesMain['_PRICE_IN_'] == '':
+                # sg.PopupError('Need item name and price!')
+            # else:
+                # priceValue = float(valuesMain['_PRICE_IN_'])
+                # receiptEntry = valuesMain['_ITEM_IN_'] + '\t\t' + "{0:.2f}".format(priceValue)
                 
-                priceSum += priceValue
+                # priceSum += priceValue
                 
-                receiptList.append(receiptEntry)
-                windowMain.Element('_LABEL_').Update('Receipt: ')
-                windowMain.Element('_ITEM_LIST_').Update(listOutput(receiptList))
+                # receiptList.append(receiptEntry)
+                # windowMain.Element('_LABEL_').Update('Receipt: ')
+                # windowMain.Element('_ITEM_LIST_').Update(listOutput(receiptList))
         
         # Completing a transaction
-        if eventMain in ('Receipt'):
+        if eventMain in ('Pay'):
             if receiptList == []:
                 sg.PopupError('There are no scanned items!')
             else:
@@ -132,7 +142,7 @@ def main():
                 
                 # Window setup
                 layoutPay = [
-                              [sg.Text('Total:' + "{0:.2f}".format(priceSum))],
+                              [sg.Text('Total:\t\t' + "{0:.2f}".format(priceSum))],
                               [sg.Button('Cash'), sg.Button('Check')],
                               [sg.Button('Credit'), sg.Button('Debit')],
                               [sg.Button('EXIT')]
@@ -144,33 +154,21 @@ def main():
         if eventMain in ('History'):
             windowMain.Element('_LABEL_').Update('History: ')
             windowMain.Element('_ITEM_LIST_').Update(historyList)
-        
-        # Adding preset items
-        if eventMain in ('Choose Items'):
-            windowItemActive = True
             
-            # Window setup
-            layoutItem = [
-                          [sg.Button('Sweatshirt'), sg.Button('Hoodie')],
-                          [sg.Button('T-shirt'), sg.Button('Cap')],
-                          [sg.Button('Jogger'), sg.Button('EXIT')]
-                         ]
-                  
-            windowItem = sg.Window('Preset Items', layoutItem, default_button_element_size=(6,2), auto_size_buttons=False)
-        
         # Buttons for debugging
         if eventMain in ('receiptList'):
             print(f"receiptList: {receiptList}")
         if eventMain in ('historyList'):
             print(f"historyList: {historyList}")
         
-        # Preset item window
+        # Item selection window
         while windowItemActive:
             eventItem, valuesItem = windowItem.Read()
             
             if eventItem in (None, 'EXIT'):
                 windowItemActive = False
                 windowItem.Close()
+                break
             
             if eventItem in ('Hoodie', 'Sweatshirt', 'T-shirt', 'Cap', 'Jogger'):
                 priceValue = priceDict[eventItem][1]
@@ -189,6 +187,7 @@ def main():
             if eventPay in (None, 'EXIT'):
                 windowPayActive = False
                 windowPay.Close()
+                break
             
             if eventPay in ('Cash', 'Check', 'Credit', 'Debit'):
                 payMethod = eventPay
@@ -196,7 +195,7 @@ def main():
                 transactionCount += 1
                 
                 historyEntry['TransactionID'] = transactionCount
-                historyEntry['Timestamp'] = dt.now()
+                historyEntry['Timestamp'] = str(dt.now())
                 historyEntry['PaymentTotal'] = "{0:.2f}".format(priceSum)
                 historyEntry['PaymentInfo'] = payMethod
                 historyEntry['Items'] = copy.deepcopy(receiptList)
@@ -209,6 +208,11 @@ def main():
                 priceSum = 0
                 historyEntry = historyEntry_default
                 receiptList.clear()
+                
+                # Close window after selection
+                windowPayActive = False
+                windowPay.Close()
+                break
     
 
 if __name__ == '__main__':
