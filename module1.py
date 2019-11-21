@@ -20,9 +20,9 @@ layout = [[sg.Text('', size=(20,1),font='Helvetica, 18', text_color='red',key='o
           [sg.Button('SweatShirt', size=(10,1)), sg.Button('Hoodie', size=(10,1))],
           [sg.Button('T-Shirt', size=(10,1)), sg.Button('Cap', size=(10,1))],
           [sg.Button('Jogger', size=(10,1)), sg.Button('Total', size=(10,1))],
-          [sg.Button('Submit',size=(10,1)), sg.Button('Add Item', size=(10,1)), sg.Button('Remove Item', size=(10,1)), sg.Button('Clear')],
+          [sg.Button('Submit',size=(10,1)), sg.Button('Add Item', size=(10,1)), sg.Button('Remove Item', size=(10,1)), sg.Button('Clear', size=(10,1))],
 
-          [sg.Button('BlockChain',size=(10,1))]]
+          [sg.Button('BlockChain',size=(10,1)), sg.Button('Admin Login', size=(10,1))]]
           
 
 window = sg.Window('THE BEST REGISTER', layout, default_button_element_size=(5,2), auto_size_buttons=False)
@@ -88,6 +88,10 @@ while True:
       window['input'].update(input)
       total_cost += 29.99
       
+    
+    if event == 'Admin Login':
+        admin_login.AdminLogin()
+        
     elif event in '1234567890':
         keys_entered = values['input']  # get what's been entered so far
         keys_entered += event  # add the new digit
