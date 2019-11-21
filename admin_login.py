@@ -19,10 +19,10 @@ import motor
 
 client = pymongo.MongoClient("mongodb+srv://chapiiin:password20@cluster0-6dsmr.gcp.mongodb.net/test?retryWrites=true&w=majority")
 db = client.TBR
-user = db.users
+admins = db.admins
 
 
-reg_users = {'_id':'temp'}
+reg_admins = {'_id':'temp'}
 
 
 def AddAccount(un,pw):
@@ -30,24 +30,11 @@ def AddAccount(un,pw):
     sha1hash = hashlib.sha1()
     sha1hash.update(password_utf)
     password_hash = sha1hash.hexdigest()
-    reg_users.update({'_id':un})
-    reg_users.update({'Password hash':password_hash})
-    rez = user.insert_one(reg_users)
+    reg_admins.update({'_id':un})
+    reg_admins.update({'Password hash':password_hash})
+    rez = admins.insert_one(reg_admins)
     return
-'''
-still working on this... not sure how to remove a document
-def RemoveAccount(un):
-    user.remove({: {eq : un}})
-    return
-''' 
-'''
-this will work once RemoveAccount() works
-def PasswordReset(un, pw):
-    RemoveAccount(un)
-    AddAccount(un,pw)
-    return
-'''
-
+	
 def PasswordMatches(a_hash, password):
     password_utf = password.encode('utf-8')
     sha1hash = hashlib.sha1()
@@ -56,24 +43,18 @@ def PasswordMatches(a_hash, password):
     return password_hash == a_hash
 
 
-def PrintAcc():
-    for i in user.find():
-        print(i['_id'])
-        print(i['Password hash'])
-
-
-
-
-def LoginCheck(un,pw):
-    results = user.find()
+def AdminLoginCheck(un,pw):
+    results = admins.find()
     for key in results:
         if(un == key['_id'] and PasswordMatches(key['Password hash'], pw)):
+            print('you beautiful idiot, you did it')
             return True
-
-
-def UserLogin():
+			
+   
+   
+def AdminLogin():
     layout2 = [
-        [sg.Text('Username entry screen', size=(30,1), font ='Any 15')],
+        [sg.Text('Administrator Login', size=(30,1), font ='Any 15')],
         [sg.Text('Username'), sg.Input(key='-username-')],
         [sg.Text('Password'), sg.Input(key='-password-', password_char='*')],
         [sg.Button('Login'), sg.Button('Exit')] 
@@ -88,15 +69,14 @@ def UserLogin():
         if ev1 in (None, 'Exit'):
             break
 
-             
         username = input['-username-']
         password = input['-password-']
         #RemoveAccount('admin')
-        if LoginCheck(username, password) and ev1 in ('Login'):
+        if AdminLoginCheck(username, password) and ev1 in ('Login'):
             un.Close()
             return True
         
-        elif not LoginCheck(username, password) and ev1 in ('Login'):
+        elif not AdminLoginCheck(username, password) and ev1 in ('Login'):
             inval = [
                 [sg.Text('Invalid credentials provided. Please try again.')],
                 [sg.Button('Ok')]
@@ -108,12 +88,10 @@ def UserLogin():
                     err.Close()
                     break
             
-    
 
-
-
+			
 def main():
-    UserLogin()
+    AdminLogin()
 
 
 if __name__ == '__main__':
