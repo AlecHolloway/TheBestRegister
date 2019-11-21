@@ -6,14 +6,48 @@ if sys.version_info[0] >= 3:
 else:
     import PySimpleGUI27 as sg
 import hashlib
-sg.change_look_and_feel('DarkAmber') 
+import datetime
+import hashlib
+import string
+from pygrok import Grok
+import time
+from datetime import datetime as dt
+
+#imports for database
+import pymongo
+import motor
+
+client = pymongo.MongoClient("mongodb+srv://chapiiin:password20@cluster0-6dsmr.gcp.mongodb.net/test?retryWrites=true&w=majority")
+db = client.TBR
+user = db.users
 
 
+reg_users = {'_id':'temp'}
 
-credentials = {'username':'5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'admin':'d033e22ae348aeb5660fc2140aec35850c4da997', 'maclain':'f798ddf054d3894403dc9c5e58c253be66defe4b'}
 
+def AddAccount(un,pw):
+    password_utf = pw.encode('utf-8')
+    sha1hash = hashlib.sha1()
+    sha1hash.update(password_utf)
+    password_hash = sha1hash.hexdigest()
+    reg_users.update({'_id':un})
+    reg_users.update({'Password hash':password_hash})
+    rez = user.insert_one(reg_users)
+    return
+'''
+still working on this... not sure how to remove a document
+def RemoveAccount(un):
+    user.remove({: {eq : un}})
+    return
+''' 
+'''
+this will work once RemoveAccount() works
+def PasswordReset(un, pw):
+    RemoveAccount(un)
+    AddAccount(un,pw)
+    return
+'''
 
-    
 def PasswordMatches(a_hash, password):
     password_utf = password.encode('utf-8')
     sha1hash = hashlib.sha1()
@@ -21,11 +55,20 @@ def PasswordMatches(a_hash, password):
     password_hash = sha1hash.hexdigest()
     return password_hash == a_hash
 
+
+def PrintAcc():
+    for i in user.find():
+        print(i['_id'])
+        print(i['Password hash'])
+
+
+
+
 def login_check(un,pw):
-    for key in credentials:
-        if(un == key and PasswordMatches(credentials[key], pw)):
+    results = user.find()
+    for key in results:
+        if(un == key['_id'] and PasswordMatches(key['Password hash'], pw)):
             return True
-        
 
 
 def UsernameEnter():
@@ -48,16 +91,12 @@ def UsernameEnter():
              
         username = input['-username-']
         password = input['-password-']
-
-            
+        #RemoveAccount('admin')
         if login_check(username, password) and ev1 in ('Login'):
-            print('Such a successful login')
-            #open other window
             un.Close()
             return True
-            
+        
         elif not login_check(username, password) and ev1 in ('Login'):
-            print('Invalid credentials provided. Please try again.')
             inval = [
                 [sg.Text('Invalid credentials provided. Please try again.')],
                 [sg.Button('Ok')]
