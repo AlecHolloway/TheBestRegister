@@ -76,7 +76,7 @@ def UserLogin():
         [sg.Text('Username entry screen', size=(30,1), font ='Any 15')],
         [sg.Text('Username'), sg.Input(key='-username-')],
         [sg.Text('Password'), sg.Input(key='-password-', password_char='*')],
-        [sg.Button('Login'), sg.Button('Exit')] 
+        [sg.Button('Login', bind_return_key=True), sg.Button('Exit')] 
     ]
     un = sg.Window('Username entry', layout2,
                     auto_size_text = False,
