@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import login
 import sys
 
@@ -24,13 +23,12 @@ db = client.TBR
 user = db.users
 
 
-def main():
-    layout0 = [[sg.Text(' Admin Panel', size=(10, 1), font='Helvetica, 18')],
+def Panel():
+    layout0 = [[sg.Text('', size=(20, 1), font='Helvetica, 18')],
     [sg.Button('Print History', size=(20, 1))],
-    [sg.Button('Add Account', size=(20, 1))],
-    [sg.Button('Delete Account', size=(20, 1))],
-    [sg.Button('Reset Password', size=(20, 1))],
-    [sg.Button('Exit', size=(20, 1))]]
+    [sg.Button('Add Account', size=(10, 1)), sg.Button('Delete Account', size=(10, 1))],
+    [sg.Button('Reset Password', size=(10, 1))],
+    [sg.Button('Exit', size=(10, 1))]]
 
     window0 = sg.Window('Administrator Control Panel', layout0, default_button_element_size=(10, 10),
        auto_size_buttons=False)
@@ -63,7 +61,7 @@ def main():
                         [sg.Text('User account has been created.')],
                         [sg.Button('Ok')]
                     ]
-                    cre = sg.Window('Creation successful', layout21)
+                    cre = sg.Window('Creation successfull', layout21)
                     while True:
                         ev2, okay = cre.Read()
                         if ev2 in (None, 'Ok'):
@@ -83,6 +81,7 @@ def main():
                         if ev2 is None or ev2 == 'Ok':
                             err.Close()
                             break
+                            break
                
                     
         if event == 'Delete Account':
@@ -98,7 +97,6 @@ def main():
                     window3.Close()
                     break
                 if event3 == 'Submit':
-                    print('we are almost there')
                     dele = [
                         [sg.Text('User account has been deleted.')],
                         [sg.Button('Ok')]
@@ -132,9 +130,7 @@ def main():
                     window4.Close()
                     break
                 if event4 == 'Submit' and pass41 == pass42:
-                    login.RemoveAccount(user4)
-                    login.AddAccount(user4, pass41)
-                    print('delete, add here')
+                    login.PasswordReset(user4, pass41)
                     layout41 = [
                         [sg.Text('Password has been reset.')],
                         [sg.Button('Ok')]
@@ -159,6 +155,10 @@ def main():
                         if ev2 in (None, 'Ok'):
                             err.Close()
                             break
+                            
+def main():
+    print('help')
 
-     
-main()
+
+if __name__ == '__main__':
+	main()
