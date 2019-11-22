@@ -54,7 +54,7 @@ def AdminLoginCheck(un,pw):
    
 def AdminLogin():
     layout2 = [
-        [sg.Text('Administrator Logins', size=(18,1), font ='Any 15')],
+        [sg.Text('Administrator Login', size=(18,1), font ='Any 15')],
         [sg.Text('Username'), sg.Input(key='-username-', size = (20,1))],
         [sg.Text('Password'), sg.Input(key='-password-', size = (20,1), password_char='*')],
         [sg.T('', size=(8,1)), sg.Button('Login'), sg.Button('Exit')] 
