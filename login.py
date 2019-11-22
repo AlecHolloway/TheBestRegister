@@ -70,7 +70,7 @@ def LoginCheck(un,pw):
 
 def UserLogin():
     layout2 = [
-        [sg.Text('Employee Login', size=(19,1), font ='Any 15')],
+        [sg.Text('Employee Login', size=(16,1), font ='Any 15')],
         [sg.Text('Username'), sg.Input(key='-username-', size = (20,1))],
         [sg.Text('Password'), sg.Input(key='-password-', size = (20,1), password_char='*')],
         [sg.T('', size =(6,1)), sg.Button('Login',bind_return_key=True), sg.Button('Exit')], 
