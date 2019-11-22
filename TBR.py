@@ -14,6 +14,9 @@ from datetime import datetime as dt
 # User login module
 import login
 
+# Database functionality
+from database import Block, Blockchain, database, search
+
 # Global variables
 historyList = []
 historyEntry_default = {
@@ -62,6 +65,7 @@ def main():
     windowItemActive = False
     windowPayActive = False
     windowReceiptActive = False
+    windowHistoryActive = False
     
     # Login event loop
     while True:
@@ -76,7 +80,7 @@ def main():
     priceSum = 0
     payMethod = 'Cash'
     receiptList = []
-    receiptEntry = "ITEM\t\tPRICE"
+    receiptEntry = "ITEM\tPRICE"
     itemIDList = []
     historyEntry = historyEntry_default
     
@@ -136,7 +140,7 @@ def main():
                 # sg.PopupError('Need item name and price!')
             # else:
                 # priceValue = float(valuesMain['_PRICE_IN_'])
-                # receiptEntry = valuesMain['_ITEM_IN_'] + '\t\t' + "{0:.2f}".format(priceValue)
+                # receiptEntry = valuesMain['_ITEM_IN_'] + '\t' + "{0:.2f}".format(priceValue)
                 
                 # priceSum += priceValue
                 
@@ -159,12 +163,26 @@ def main():
                              [sg.Button('EXIT')]
                             ]
                       
-                windowPay = sg.Window('Preset Items', layoutPay, default_button_element_size=(6,2), auto_size_buttons=False)
+                windowPay = sg.Window('Payment Method', layoutPay, default_button_element_size=(6,2), auto_size_buttons=False)
         
         # Accessing the transaction history
         if eventMain in ('History'):
             windowMain.Element('_LABEL_').Update('History: ')
             windowMain.Element('_DISPLAY_').Update(historyList)
+            
+            windowHistoryActive = True
+            
+            # Window setup
+            layoutHistory = [
+                             [sg.Multiline('', size=(40,20), key='_HISTORY_')],
+                             [sg.Text('Enter search terms: ', size=(40,1))],
+                             [sg.Input(size=(40,1), key='_SEARCH_', do_not_clear=True)],
+                             [sg.Radio('Transaction ID', 1, True, key='_TID_'), sg.Radio('Date/Time', 1, key='_D/T_'), sg.Radio('Location', 1, key='_L_')],
+                             [sg.Radio('Pay Info', 1, key='_PI_'), sg.Radio('Item ID', 1, key='_IID_')],
+                             [sg.Button('Search'), sg.Button('EXIT')]
+                            ]
+                  
+            windowHistory = sg.Window('Transaction History', layoutHistory, default_button_element_size=(6,2), auto_size_buttons=False)
             
         # Buttons for debugging
         if eventMain in ('receiptList'):
@@ -193,6 +211,33 @@ def main():
                 receiptList.append(receiptEntry)
                 windowMain.Element('_DISPLAY_').Update(listOutput(receiptList))
                 
+                
+        # History window event loop
+        while windowHistoryActive:
+            eventHistory, valuesHistory = windowHistory.Read()
+            
+            if eventHistory in (None, 'EXIT'):
+                windowHistoryActive = False
+                windowHistory.Close()
+                break
+            
+            if eventHistory in ('Search'):
+                if valuesHistory['_TID_']:
+                    criteria = 'TransactionID'
+                elif valuesHistory['_D/T_']:
+                    criteria = 'Timestamp'
+                elif valuesHistory['_L_']:
+                    criteria = 'Location'
+                elif valuesHistory['_PI_']:
+                    criteria = 'PaymentInfo'
+                elif valuesHistory['_IID_']:
+                    criteria = 'Items'
+                    
+                term = valuesHistory['_SEARCH_']
+                
+                display = search(criteria, term)
+                windowHistory.Element('_HISTORY_').Update(display)
+                
         
         # Payment window event loop
         while windowPayActive:
@@ -220,6 +265,9 @@ def main():
                 windowMain.Element('_LABEL_').Update('Transaction: ')
                 windowMain.Element('_DISPLAY_').Update(['Added to History'])
                 
+                # Update database
+                database.update_database(transactionCount, historyEntry)
+                
                 # Close window after selection
                 windowPayActive = False
                 windowPay.Close()
@@ -238,6 +286,8 @@ def main():
                 windowReceipt = sg.Window('Receipt', layoutReceipt, default_button_element_size=(6,2), auto_size_buttons=False)
                 windowReceiptActive = True
                 
+                
+                # Receipt window event loop
                 while windowReceiptActive:
                     eventReceipt, valuesReceipt = windowReceipt.Read()
                     
