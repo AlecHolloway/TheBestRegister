@@ -25,11 +25,12 @@ user = db.users
 
 
 def main():
-    layout0 = [[sg.Text('', size=(20, 1), font='Helvetica, 18')],
+    layout0 = [[sg.Text(' Admin Panel', size=(10, 1), font='Helvetica, 18')],
     [sg.Button('Print History', size=(20, 1))],
-    [sg.Button('Add Account', size=(10, 1)), sg.Button('Delete Account', size=(10, 1))],
-    [sg.Button('Reset Password', size=(10, 1))],
-    [sg.Button('Exit', size=(10, 1))]]
+    [sg.Button('Add Account', size=(20, 1))],
+    [sg.Button('Delete Account', size=(20, 1))],
+    [sg.Button('Reset Password', size=(20, 1))],
+    [sg.Button('Exit', size=(20, 1))]]
 
     window0 = sg.Window('Administrator Control Panel', layout0, default_button_element_size=(10, 10),
        auto_size_buttons=False)
