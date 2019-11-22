@@ -18,6 +18,7 @@ from datetime import datetime as dt
 # User login module
 import login
 import admin_login
+import admin_panel
 
 
 
@@ -176,7 +177,7 @@ def main():
                 
         if eventMain in ('Admin login'):
             if(admin_login.AdminLogin()):
-                import admin_panel
+                admin_panel.Panel()
         
         # Accessing the transaction history
         if eventMain in ('History'):
