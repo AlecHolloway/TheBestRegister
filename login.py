@@ -98,13 +98,13 @@ def UserLogin():
         
         elif not LoginCheck(username, password) and ev1 in ('Login'):
             inval = [
-                [sg.Text('Invalid credentials provided. Please try again.')],
-                [sg.Button('Ok')]
+                [sg.Text('Invalid credentials provided. Please try again.', size=(36,1), font ='Any 15')],
+                [sg.T('', size =(21,1)),sg.Button('OK')]
             ]
             err = sg.Window('Inccorect username or password', inval)
             while True:
                 ev2, okay = err.Read()
-                if ev2 in (None, 'Ok'):
+                if ev2 in (None, 'OK'):
                     err.Close()
                     break
             
