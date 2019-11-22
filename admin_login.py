@@ -54,19 +54,20 @@ def AdminLoginCheck(un,pw):
    
 def AdminLogin():
     layout2 = [
-        [sg.Text('Administrator Login', size=(30,1), font ='Any 15')],
-        [sg.Text('Username'), sg.Input(key='-username-')],
-        [sg.Text('Password'), sg.Input(key='-password-', password_char='*')],
-        [sg.Button('Login'), sg.Button('Exit')] 
+        [sg.Text('Administrator Login', size=(18,1), font ='Any 15')],
+        [sg.Text('Username'), sg.Input(key='-username-', size = (20,1))],
+        [sg.Text('Password'), sg.Input(key='-password-', size=(20,1), password_char='*')],
+        [sg.T('', size =(6,1)),sg.Button('Login'), sg.Button('Exit')] 
     ]
     un = sg.Window('Username entry', layout2,
-                    auto_size_text = False,
+                    auto_size_text = True,
                     text_justification='r',
                     grab_anywhere=False)
 
     while True:
         ev1, input = un.Read()
-        if ev1 in (None, 'Exit'):
+        if ev1 is None or ev1 == 'Exit':
+	    un.Close()
             break
 
         username = input['-username-']

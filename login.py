@@ -73,19 +73,22 @@ def LoginCheck(un,pw):
 
 def UserLogin():
     layout2 = [
-        [sg.Text('Username entry screen', size=(30,1), font ='Any 15')],
-        [sg.Text('Username'), sg.Input(key='-username-')],
-        [sg.Text('Password'), sg.Input(key='-password-', password_char='*')],
-        [sg.Button('Login', bind_return_key=True), sg.Button('Exit')] 
+        [sg.Text('Employee Login Screen', size=(19,1), font ='Any 15')],
+        [sg.Text('Username'), sg.Input(key='-username-', size = (20,1))],
+        [sg.Text('Password'), sg.Input(key='-password-', size = (20,1), password_char='*')],
+        [sg.T('', size =(6,1)), sg.Button('Login',bind_return_key=True), sg.Button('Exit')], 
     ]
-    un = sg.Window('Username entry', layout2,
-                    auto_size_text = False,
+    un = sg.Window('Username Entry', layout2,
+                    auto_size_text = True,
                     text_justification='r',
-                    grab_anywhere=False)
+                    grab_anywhere=False,
+                    default_button_element_size=(3,1)
+                   )
 
     while True:
         ev1, input = un.Read()
-        if ev1 in (None, 'Exit'):
+        if ev1 is None or ev1 == 'Exit':
+	    un.Close()
             break
 
              
