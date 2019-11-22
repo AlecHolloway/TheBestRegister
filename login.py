@@ -34,19 +34,16 @@ def AddAccount(un,pw):
     reg_users.update({'Password hash':password_hash})
     rez = user.insert_one(reg_users)
     return
-'''
-still working on this... not sure how to remove a document
+
 def RemoveAccount(un):
-    user.remove({: {eq : un}})
-    return
-''' 
-'''
-this will work once RemoveAccount() works
+    result1 = user.find({'_id':un})
+    user.delete_one({'_id':un})
+
 def PasswordReset(un, pw):
     RemoveAccount(un)
     AddAccount(un,pw)
     return
-'''
+
 
 def PasswordMatches(a_hash, password):
     password_utf = password.encode('utf-8')
@@ -73,7 +70,7 @@ def LoginCheck(un,pw):
 
 def UserLogin():
     layout2 = [
-        [sg.Text('Employee Login Screen', size=(19,1), font ='Any 15')],
+        [sg.Text('Employee Login', size=(19,1), font ='Any 15')],
         [sg.Text('Username'), sg.Input(key='-username-', size = (20,1))],
         [sg.Text('Password'), sg.Input(key='-password-', size = (20,1), password_char='*')],
         [sg.T('', size =(6,1)), sg.Button('Login',bind_return_key=True), sg.Button('Exit')], 
@@ -88,13 +85,13 @@ def UserLogin():
     while True:
         ev1, input = un.Read()
         if ev1 is None or ev1 == 'Exit':
-	    un.Close()
+            un.Close()
             break
 
              
         username = input['-username-']
         password = input['-password-']
-        #RemoveAccount('admin')
+        RemoveAccount('admin')
         if LoginCheck(username, password) and ev1 in ('Login'):
             un.Close()
             return True
