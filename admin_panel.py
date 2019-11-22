@@ -62,13 +62,13 @@ def main():
                         [sg.Text('User account has been created.')],
                         [sg.Button('Ok')]
                     ]
-                    cre = sg.Window('Creation successfull', layout21)
+                    cre = sg.Window('Creation successful', layout21)
                     while True:
                         ev2, okay = cre.Read()
                         if ev2 in (None, 'Ok'):
                             cre.Close()
                             break
-                    
+                            break
                     window2.Close()
                     break
                 if event2 == 'Submit' and pass21 != pass22:
@@ -144,7 +144,7 @@ def main():
                         if ev4 is None or ev4 == 'Ok':
                             re.Close()
                             break
-                    
+                            break
                     window4.Close()
                     break
                 if event2 == 'Submit' and pass21 != pass22:
