@@ -95,8 +95,6 @@ class Blockchain:
         block.data['TransactionID'] = str(block.data['blockNo'])
         
         self.block = block
-        
-        # print('\nself.block.data:\n'+str(self.block.data)+'\n')
 
     def mine(self, block):
         for n in range(self.maxNonce):
@@ -139,15 +137,11 @@ class database:
 
         # Get blockchain
         blockchainRetrieved = transactions.find_one({'title': 'blockchain'})
-        # print('\nblockchainRetrieved:\n'+str(blockchainRetrieved)+'\n')
-        
         blockchain = pickle.loads(blockchainRetrieved['data'])
-        # print('\nblockchain:\n'+str(blockchain)+'\n')
         
         # Add block
         block = Block(data)
         blockchain.add(block)
-        # print('\ndata:\n'+str(data)+'\n')
         
         # Add data entry
         transactions.insert_one(data)
@@ -157,7 +151,20 @@ class database:
         blockchainBinary = Binary(blockchainBytes)
         transactions.update_one({'title':'blockchain'},{'$set':{'data':blockchainBinary}})
         transactions.update_one({'title':'blockchain'},{'$set':{'edits':blockchainRetrieved['edits']+1}})
-           
 
-def search(criteria, term):
-    print("\n\nNOT YET IMPLEMENTED\n\n")
+    def search(criteria, term, transactions = transactionsAtt):
+        
+        if criteria in ('TransactionID', 'Location', 'PaymentInfo'):
+            results = []
+            for x in transactions.find({criteria:term}):
+                results.append(x)
+            if results == []:
+                results = "No results found"
+        
+        elif criteria in ('Items'):
+            results = "NOT YET IMPLEMENTED"
+        
+        elif criteria in ('Timestamp'):
+            results = "NOT YET IMPLEMENTED"
+        
+        return results # Stuff that will show up in '_HISTORY_'

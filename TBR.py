@@ -15,7 +15,7 @@ from datetime import datetime as dt
 import login
 
 # Database functionality
-from database import database, search
+from database import database
 
 # Global variables
 historyList = []
@@ -49,14 +49,9 @@ def listOutput(listInput):
             # Convert each nested list into a string
             listInput[i] = listOutput(listInput[i])
     
-    # print(f"listInput: {listInput}")
-    
     # Put each list item on its own line
     separator = '\n'
     stringOutput = separator.join(listInput)
-    
-    # Check output in the console
-    # print(f"stringOutput: {stringOutput}")
     
     return stringOutput
 
@@ -91,16 +86,8 @@ def main():
                   [sg.Text('Transaction: ', key='_LABEL_', size=(20,1))],
                   [sg.Multiline('', size=(40,20), key='_DISPLAY_')],
                   [sg.Text('Total:', size=(20,1)), sg.Text('0.00', key='_TOTAL_', size=(20,1))],
-                  
-                  # Manual item entry
-                  # [sg.Text('Item: ', size=(20,1), key='_INPUT_LABEL_1_'), sg.Text('Price: ', size=(20,1), key='_INPUT_LABEL_2_')],
-                  # [sg.Input(size=(20,1), key='_ITEM_IN_', do_not_clear=False), sg.Input(size=(20,1), key='_PRICE_IN_', do_not_clear=False)],
-                  
                   [sg.Button('Scan', bind_return_key=True), sg.Button('Pay'), sg.Button('History')],
-                  [sg.Button('EXIT')],
-                  
-                  # Buttons for debugging
-                  # [sg.Button('receiptList'), sg.Button('historyList')]
+                  [sg.Button('EXIT')]
                  ]
 
     windowMain = sg.Window('The BEST Register', layoutMain, default_button_element_size=(10,2), auto_size_buttons=False)
@@ -109,9 +96,6 @@ def main():
     while True:
         eventMain, valuesMain = windowMain.Read()
         
-        # Check values in the console
-        # print('\n', eventMain, valuesMain)
-        
         # Closing the window
         if eventMain in (None, 'EXIT'):
             windowMain.Close()
@@ -119,8 +103,6 @@ def main():
         
         # Scanning items
         if eventMain in ('Scan'):
-            windowMain.Element('_LABEL_').Update('Transaction: ')
-            
             if receiptList != []:
                 windowMain.Element('_DISPLAY_').Update(listOutput(receiptList))
             else:
@@ -137,18 +119,6 @@ def main():
                          ]
                   
             windowItem = sg.Window('Select Items', layoutItem, default_button_element_size=(6,2), auto_size_buttons=False)
-            
-            # if valuesMain['_ITEM_IN_'] == '' or valuesMain['_PRICE_IN_'] == '':
-                # sg.PopupError('Need item name and price!')
-            # else:
-                # priceValue = float(valuesMain['_PRICE_IN_'])
-                # receiptEntry = valuesMain['_ITEM_IN_'] + '\t' + "{0:.2f}".format(priceValue)
-                
-                # priceSum += priceValue
-                
-                # receiptList.append(receiptEntry)
-                # windowMain.Element('_LABEL_').Update('Transaction: ')
-                # windowMain.Element('_DISPLAY_').Update(listOutput(receiptList))
         
         # Completing a transaction
         if eventMain in ('Pay'):
@@ -169,9 +139,6 @@ def main():
         
         # Accessing the transaction history
         if eventMain in ('History'):
-            windowMain.Element('_LABEL_').Update('History: ')
-            windowMain.Element('_DISPLAY_').Update(historyList)
-            
             windowHistoryActive = True
             
             # Window setup
@@ -237,7 +204,7 @@ def main():
                     
                 term = valuesHistory['_SEARCH_']
                 
-                display = search(criteria, term)
+                display = database.search(criteria, term)
                 windowHistory.Element('_HISTORY_').Update(display)
                 
         
@@ -261,7 +228,6 @@ def main():
                 windowMain.Element('_TOTAL_').Update("0.00")
                 
                 historyList.append(copy.deepcopy(historyEntry))
-                windowMain.Element('_LABEL_').Update('Transaction: ')
                 windowMain.Element('_DISPLAY_').Update(['Added to History'])
                 
                 # Update database
@@ -298,7 +264,6 @@ def main():
                 # Reset variables
                 priceSum = 0
                 historyEntry = copy.deepcopy(historyEntry_default)
-                # print("\nHISTORY ENTRY RESET:\n"+str(historyEntry)+"\n")
                 itemIDList.clear()
                 receiptList.clear()
                 
