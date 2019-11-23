@@ -17,6 +17,7 @@ from datetime import datetime as dt
 import pymongo
 import motor
 
+
 client = pymongo.MongoClient("mongodb+srv://chapiiin:password20@cluster0-6dsmr.gcp.mongodb.net/test?retryWrites=true&w=majority")
 db = client.TBR
 admins = db.admins
@@ -47,7 +48,6 @@ def AdminLoginCheck(un,pw):
     results = admins.find()
     for key in results:
         if(un == key['_id'] and PasswordMatches(key['Password hash'], pw)):
-            print('you beautiful idiot, you did it')
             return True
 			
    
@@ -56,18 +56,19 @@ def AdminLogin():
     layout2 = [
         [sg.Text('Administrator Login', size=(18,1), font ='Any 15')],
         [sg.Text('Username'), sg.Input(key='-username-', size = (20,1))],
-        [sg.Text('Password'), sg.Input(key='-password-', size=(20,1), password_char='*')],
-        [sg.T('', size =(6,1)),sg.Button('Login'), sg.Button('Exit')] 
+        [sg.Text('Password'), sg.Input(key='-password-', size = (20,1), password_char='*')],
+        [sg.T('', size=(8,1)), sg.Button('Login'), sg.Button('Exit')] 
     ]
     un = sg.Window('Username entry', layout2,
                     auto_size_text = True,
                     text_justification='r',
-                    grab_anywhere=False)
+                    grab_anywhere=False,
+                    default_button_element_size=(3,1)
+                    )
 
     while True:
         ev1, input = un.Read()
-        if ev1 is None or ev1 == 'Exit':
-	    un.Close()
+        if ev1 in (None, 'Exit'):
             break
 
         username = input['-username-']
