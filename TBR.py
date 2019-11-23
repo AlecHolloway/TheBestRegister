@@ -15,7 +15,7 @@ from datetime import datetime as dt
 import login
 
 # Database functionality
-from database import Block, Blockchain, database, search
+from database import database, search
 
 # Global variables
 historyList = []
@@ -25,7 +25,10 @@ historyEntry_default = {
                         'Timestamp' : 'NOT SET',
                         'PaymentTotal' : 'NOT SET',
                         'PaymentInfo' : 'NOT SET',
-                        'Items' : 'NOT SET'
+                        'Items' : 'NOT SET',
+                        'this_hash' : 'NOT SET',
+                        'next_hash' : 'NOT SET',
+                        'previous_hash' : 'NOT SET'
                        }
 
 # For each item, there is an item ID and a price
@@ -46,14 +49,14 @@ def listOutput(listInput):
             # Convert each nested list into a string
             listInput[i] = listOutput(listInput[i])
     
-    print(f"listInput: {listInput}")
+    # print(f"listInput: {listInput}")
     
     # Put each list item on its own line
     separator = '\n'
     stringOutput = separator.join(listInput)
     
     # Check output in the console
-    print(f"stringOutput: {stringOutput}")
+    # print(f"stringOutput: {stringOutput}")
     
     return stringOutput
 
@@ -76,13 +79,12 @@ def main():
             return
     
     # Local variables
-    transactionCount = 0
     priceSum = 0
     payMethod = 'Cash'
     receiptList = []
     receiptEntry = "ITEM\tPRICE"
     itemIDList = []
-    historyEntry = historyEntry_default
+    historyEntry = copy.deepcopy(historyEntry_default)
     
     # Window setup
     layoutMain = [
@@ -108,7 +110,7 @@ def main():
         eventMain, valuesMain = windowMain.Read()
         
         # Check values in the console
-        print('\n', eventMain, valuesMain)
+        # print('\n', eventMain, valuesMain)
         
         # Closing the window
         if eventMain in (None, 'EXIT'):
@@ -134,7 +136,7 @@ def main():
                           [sg.Button('Jogger'), sg.Button('EXIT')]
                          ]
                   
-            windowItem = sg.Window('Select Items', layoutItem, default_button_element_size=(8,2), auto_size_buttons=False)
+            windowItem = sg.Window('Select Items', layoutItem, default_button_element_size=(6,2), auto_size_buttons=False)
             
             # if valuesMain['_ITEM_IN_'] == '' or valuesMain['_PRICE_IN_'] == '':
                 # sg.PopupError('Need item name and price!')
@@ -251,9 +253,6 @@ def main():
             if eventPay in ('Cash', 'Check', 'Credit', 'Debit'):
                 payMethod = eventPay
             
-                transactionCount += 1
-                
-                historyEntry['TransactionID'] = str(transactionCount)
                 historyEntry['Timestamp'] = str(dt.now())
                 historyEntry['PaymentTotal'] = "{0:.2f}".format(priceSum)
                 historyEntry['PaymentInfo'] = payMethod
@@ -266,7 +265,7 @@ def main():
                 windowMain.Element('_DISPLAY_').Update(['Added to History'])
                 
                 # Update database
-                database.update_database(transactionCount, historyEntry)
+                database.update_database(historyEntry)
                 
                 # Close window after selection
                 windowPayActive = False
@@ -298,7 +297,8 @@ def main():
                 
                 # Reset variables
                 priceSum = 0
-                historyEntry = historyEntry_default
+                historyEntry = copy.deepcopy(historyEntry_default)
+                # print("\nHISTORY ENTRY RESET:\n"+str(historyEntry)+"\n")
                 itemIDList.clear()
                 receiptList.clear()
                 
