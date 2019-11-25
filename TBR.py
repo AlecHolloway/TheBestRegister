@@ -205,6 +205,7 @@ def main():
                 break
 
             if eventHistory in ('Print All'):
+                print("--Displaying all transactions--")
 
 #########################################################################################################
                 def RetAll():
@@ -218,13 +219,16 @@ def main():
 
                     #Find the last transaction ID
                     for x in last_doc:
-                        lastTransactionID = x['TransactionID']
+                        print("Last transaction: ", x)
+                    lastTransactionID = x['TransactionID']
+                    print()
+                    print()
                     
                     history_array = []
                     item_num = "1"
 
                     lastTransactionID = int(lastTransactionID)
-#                    print("Last transaction ID: ", lastTransactionID)
+                    print("Last transaction ID: ", lastTransactionID)
                     for x in range(lastTransactionID):
                     #result = transactions.find()
                         item_num = str(item_num)
@@ -250,24 +254,21 @@ def main():
                             
                 def print_all():
                     print_all_called = True
+                    print("Print all called should be true.")
+                    print("Print all called: ", print_all_called)
                     column = [[sg.Text('TBR', justification='center', size=(50,1))]]
 
                     layout5 = [[sg.Text('Below is the printed history', size=(24,1), font='Helvetica, 18')],
-                    [sg.Button('Exit', size=(10,1), bind_return_key=True)],
                     [sg.Listbox(values=(RetAll()), size=(120,120))],
-
                     ] 
 
-                    print_window = sg.Window('TBR', layout5, default_element_size=(20, 1), grab_anywhere=False, size=(800,720))
+                    print_window = sg.Window('TBR', layout5, default_element_size=(20, 1), grab_anywhere=False, size=(800,700))
                     
-                    while print_window:
-                        event1, value1 = print_window.Read()
-                        if event1 == 'Exit':
-                            print_window.Close()
-                            break
-                        break
-   
+                    print_window.Read()
+                    print("--print all window closed--")
+                    
                 if print_all_called == False:
+                    print("Running print all")
                     print_all()
                     
                 

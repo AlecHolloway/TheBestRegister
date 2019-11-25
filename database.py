@@ -272,3 +272,5 @@ class database:
         else:
             history_array.extend(["TRANSACTION DOES NOT EXIST"])            
             return history_array # Stuff that will show up in '_HISTORY_'
+
+   
