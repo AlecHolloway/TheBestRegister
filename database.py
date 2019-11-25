@@ -171,8 +171,15 @@ class database:
 
             
             # print list of dates within range
-            start = datetime.datetime.strptime(startDate, "%B %d, %Y")
-            end = datetime.datetime.strptime(endDate, "%B %d, %Y")
+            try:
+                start = datetime.datetime.strptime(startDate, "%B %d, %Y")
+                end = datetime.datetime.strptime(endDate, "%B %d, %Y")
+            except:
+                print("Date must be entered in correct format. (Ex: November 25, 2019)")
+                history_array.extend(["Date must be entered in correct format. (Ex: November 25, 2019)"])
+                return history_array
+                
+                
             date_array = \
                 (start + datetime.timedelta(days=x) for x in range(0, (end - start).days))
 
