@@ -206,7 +206,7 @@ def main():
                 priceValue = priceDict[eventItem][1]
                 receiptEntry = '(' + priceDict[eventItem][0] + ')  ' + eventItem + '  ' + priceValue
                 
-                priceSum += float(priceValue)
+                priceSum += float(priceValue) * 1.07
                 windowMain.Element('_TOTAL_').Update("{0:.2f}".format(priceSum))
                 
                 itemIDList.append(priceDict[eventItem][0])
