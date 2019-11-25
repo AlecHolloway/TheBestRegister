@@ -68,7 +68,8 @@ def AdminLogin():
     while True:
         ev1, input = un.Read()
         if ev1 == None or ev1 == 'Exit':
-            return
+            un.Close()
+            break
 
         username = input['-username-']
         password = input['-password-']
