@@ -91,7 +91,6 @@ def UserLogin():
              
         username = input['-username-']
         password = input['-password-']
-        RemoveAccount('admin')
         if LoginCheck(username, password) and ev1 in ('Login'):
             un.Close()
             return True
