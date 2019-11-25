@@ -157,73 +157,86 @@ class database:
 
 
     #Combined search attempt
-    def search_database(criteria, term, startDate, endDate, transactions = transactionsAtt):
+    def search_database(criteria, term, startDate, transactions = transactionsAtt):
         history_array = []
+        dateSelected = False
         # First, get a list of stuff between startDate and endDate
         # if nothing was entered for either, then ignore it
         # do the searches below on the list of stuff between start and end date
-        if (startDate != "") and (endDate != ""):
-            print("Date range selected")
+        if (startDate != ""):
+            print("Date search selected")
+            dateSelected = True
+            
             print("Start date: ", startDate)
-            print("End date: ", endDate)
+            #print("End date: ", endDate)
             i = 0.0
             print()
 
             
-            # print list of dates within range
-            try:
-                start = datetime.datetime.strptime(startDate, "%B %d, %Y")
-                end = datetime.datetime.strptime(endDate, "%B %d, %Y")
-            except:
-                print("Date must be entered in correct format. (Ex: November 25, 2019)")
-                history_array.extend(["Date must be entered in correct format. (Ex: November 25, 2019)"])
-                return history_array
-                
-                
-            date_array = \
-                (start + datetime.timedelta(days=x) for x in range(0, (end - start).days))
-
-            date_range_array = []
-            # Date of transactions within range entered
-            for date_object in date_array:
-                #print(date_object.strftime("%B %d, %Y"))
-                date_object.strftime("%B %d, %Y")
-                date_range_array.append(date_object.strftime("%B %d, %Y"))
-
-            print()
-
-            # Compare the start date
-            start_date = dt.strptime(startDate, "%B %d, %Y")
-            end_date = dt.strptime(endDate, "%B %d, %Y")
-        
-            # Error checking to see if start day is valid
-            if start_date > end_date:
-                print("ERROR: Start date cannot be greater than end date.")
-                print()
-                print()
-                history_array.extend(["ERROR: Start date cannot be greater than end date."])
-                return history_array
-                database.search_database(criteria, term, startDate, endDate)
-            if start_date == end_date:
-                print("ERROR: End date must be at least one day later than the start date.")
-                print()
-                print()
-                history_array.extend(["ERROR: End date must be at least one day later than the start date."])
-                return history_array
-                database.search_database(criteria, term, startDate, endDate)
-            print()    
-            print("-----Displaying information for the purchases made on or after ", startDate, " and before ", endDate, "-----")
-            print()
+##            # print list of dates within range
+##            try:
+##                start = datetime.datetime.strptime(startDate, "%B %d, %Y")
+##                end = datetime.datetime.strptime(endDate, "%B %d, %Y")
+##            except:
+##                print("Date must be entered in correct format. (Ex: November 25, 2019)")
+##                history_array.extend(["Date must be entered in correct format. (Ex: November 25, 2019)"])
+##                return history_array
+##                
+##                
+##            date_array = \
+##                (start + datetime.timedelta(days=x) for x in range(0, (end - start).days))
+##
+##            date_range_array = []
+##            # Date of transactions within range entered
+##            for date_object in date_array:
+##                print(date_object.strftime("%B %d, %Y"))
+##                date_object.strftime("%B %d, %Y")
+##                date_range_array.append(date_object.strftime("%B %d, %Y"))
+##
+##            print()
+##            print("Date range array: ", date_range_array)
+##
+##            # Compare the start date
+##            start_date = dt.strptime(startDate, "%B %d, %Y")
+##            #end_date = dt.strptime(endDate, "%B %d, %Y")
+##        
+##            # Error checking to see if start day is valid
+##            if start_date > end_date:
+##                print("ERROR: Start date cannot be greater than end date.")
+##                print()
+##                print()
+##                history_array.extend(["ERROR: Start date cannot be greater than end date."])
+##                return history_array
+##                database.search_database(criteria, term, startDate)
+##            if start_date == end_date:
+##                print("ERROR: End date must be at least one day later than the start date.")
+##                print()
+##                print()
+##                history_array.extend(["ERROR: End date must be at least one day later than the start date."])
+##                return history_array
+##                database.search_database(criteria, term, startDate)
+##            print()    
+##            print("-----Displaying information for the purchases made on or after ", startDate, " and before ", endDate, "-----")
+##            print()
             z = 0
             i = 1
+            dateMatch = []
             executed = False
-            for i in range(len(date_range_array)):     
-                search = transactions.find({'Timestamp': date_range_array[i]})
+            for i in range(1):     
+                search = transactions.find({'Timestamp': startDate})
                 for match in search:
                     print(match)
+                    print("--date match found--")
+                    dateMatch.extend([match])
                     executed = True
+
+
+
                 i += 1
 
+            print("date match array:", dateMatch)
+            return dateMatch
+        
             if executed == False:
                 print("**NO TRANSACTIONS OCCURRED DURING THIS TIME RANGE**")
                 print()
@@ -237,7 +250,54 @@ class database:
         if (term == ""):
             history_array.extend(["Please enter a filter to search by."])
             return history_array
-        
+
+
+        #if date range selected
+##        if (criteria in ('TransactionID', 'Location', 'PaymentInfo')) and (dateSelected == True):
+##
+##            #Find the last transaction
+##            transactionsAtt = storage.transactions
+##            last_doc = transactionsAtt.find().sort('TransactionID', pymongo.DESCENDING).limit(1)
+##
+##            #Find the last transaction ID
+##            for x in last_doc:
+##                lastTransactionID = x['TransactionID']
+##                
+##            dateMatches = []
+##            history_array = []
+##            print()
+##            print("--DATE RANGE SELECTED WITH FILTER ADDED--")
+##            print(date_range_array)
+##            #transactions with matching criteria
+##            start = transactions.find({criteria:term})
+##            #transactions with matching date
+##            for x in range(len(5)):
+##                dateMatch = transactions.find({"Timestamp":date_range_array[i]})
+##                dateMatches.extend([dateMatch])
+##                
+##            print("dateMatches array: ", dateMatches)
+##        
+##            for i in start:
+##                
+##                a = 'ID:' + i['TransactionID'] + '\n'
+##                b = 'Items:' + str(i['Items']) + '\n'        
+##                c = 'Timestamp:' + i['Timestamp'] + '\n'
+##                #d = ('Transaction hash:', i['this_hash'])
+##                e = 'Store Location:' + i['Location'] + '\n'        
+##                f = 'Transaction Cost:' + i['PaymentTotal'] + '\n'
+##                g = 'Payment Method:' + i['PaymentInfo'] + '\n' + '\n'
+##                
+##
+##                history_array.extend([a,b,c,e,f,g])
+##                print("History array: ")
+##                print(history_array)
+##
+##
+##            if history_array == []:
+##                history_array.extend(["No results found"])
+##                return history_array
+##                
+##            return history_array
 
         
         #if no date range selected        
@@ -272,5 +332,3 @@ class database:
         else:
             history_array.extend(["TRANSACTION DOES NOT EXIST"])            
             return history_array # Stuff that will show up in '_HISTORY_'
-
-   

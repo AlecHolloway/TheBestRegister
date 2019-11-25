@@ -162,8 +162,10 @@ def main():
                              [sg.Radio('Transaction ID', 1, True, key='_TID_'), sg.Radio('Location', 1, key='_L_')],
                              [sg.Radio('Pay Info', 1, key='_PI_')],
                              [sg.Button('Search'),sg.Button('Print All'), sg.Button('EXIT')],
-                             [sg.Text('Start Date (Ex: November 18, 2019) *Inclusive*: ', size=(35,1)), sg.Text('End Date(Ex: November 19, 2019) *Non-inclusive*: ', size=(40,1))],
-                             [sg.Input(size=(40,1), key='_SDATE_', do_not_clear=True), sg.Input(size=(40,1), key='_EDATE_', do_not_clear=True)]
+                             #[sg.Text('Start Date (Ex: November 18, 2019) *Inclusive*: ', size=(35,1)), sg.Text('End Date(Ex: November 19, 2019) *Non-inclusive*: ', size=(40,1))],
+                             [sg.Text('Date (Ex: November 25, 2019): ', size=(35,1))],
+                             #[sg.Input(size=(40,1), key='_SDATE_', do_not_clear=True), sg.Input(size=(40,1), key='_EDATE_', do_not_clear=True)]
+                             [sg.Input(size=(40,1), key='_SDATE_', do_not_clear=True)]
                             ]
                   
             windowHistory = sg.Window('Transaction History', layoutHistory, default_button_element_size=(6,2), auto_size_buttons=False)
@@ -205,7 +207,6 @@ def main():
                 break
 
             if eventHistory in ('Print All'):
-                print("--Displaying all transactions--")
 
 #########################################################################################################
                 def RetAll():
@@ -219,10 +220,7 @@ def main():
 
                     #Find the last transaction ID
                     for x in last_doc:
-                        print("Last transaction: ", x)
-                    lastTransactionID = x['TransactionID']
-                    print()
-                    print()
+                        lastTransactionID = x['TransactionID']
                     
                     history_array = []
                     item_num = "1"
@@ -254,21 +252,24 @@ def main():
                             
                 def print_all():
                     print_all_called = True
-                    print("Print all called should be true.")
-                    print("Print all called: ", print_all_called)
                     column = [[sg.Text('TBR', justification='center', size=(50,1))]]
 
                     layout5 = [[sg.Text('Below is the printed history', size=(24,1), font='Helvetica, 18')],
+                    [sg.Button('Exit', size=(10,1), bind_return_key=True)],
                     [sg.Listbox(values=(RetAll()), size=(120,120))],
+
                     ] 
 
-                    print_window = sg.Window('TBR', layout5, default_element_size=(20, 1), grab_anywhere=False, size=(800,700))
+                    print_window = sg.Window('TBR', layout5, default_element_size=(20, 1), grab_anywhere=False, size=(800,720))
                     
-                    print_window.Read()
-                    print("--print all window closed--")
-                    
+                    while print_window:
+                        event1, value1 = print_window.Read()
+                        if event1 == 'Exit':
+                            print_window.Close()
+                            break
+                        break
+   
                 if print_all_called == False:
-                    print("Running print all")
                     print_all()
                     
                 
@@ -285,9 +286,9 @@ def main():
                     
                 term = valuesHistory['_SEARCH_']
                 startDate = valuesHistory['_SDATE_']
-                endDate = valuesHistory['_EDATE_']
+                #endDate = valuesHistory['_EDATE_']
                 
-                display = database.search_database(criteria, term, startDate, endDate)
+                display = database.search_database(criteria, term, startDate)
                 windowHistory.Element('_HISTORY_').Update(display)
                 
         
