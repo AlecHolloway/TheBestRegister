@@ -111,7 +111,7 @@ def Panel():
         if event == 'Delete Account':
             layout3 = [[sg.Text('Enter the username of the account to be deleted', size=(50,1))],
             [sg.Input(key='-user-')],
-            [sg.Button('Submit', size=(10,1)), sg.Button('Cancel', size=(10,1))]]
+            [sg.Button('Submit', size=(10,1),bind_return_key=True), sg.Button('Cancel', size=(10,1))]]
         
             window3 = sg.Window('Delete Account', layout3, default_button_element_size=(10,10))
             delAcc = True
@@ -174,7 +174,7 @@ def Panel():
                     login.PasswordReset(user4, pass41)
                     layout41 = [
                         [sg.Text('Password has been reset.')],
-                        [sg.Button('Ok', bind_return_key=True)]
+                        [sg.Button('Ok')]
                     ]
                     re = sg.Window('Reset successful.', layout41)
                     while True:
@@ -216,3 +216,4 @@ def Panel():
 
 if __name__ == '__main__':
 	main()
+            
