@@ -14,6 +14,7 @@ from datetime import datetime as dt
 # User login module
 import login
 import admin_login
+import admin_panel
 
 # Database functionality
 from database import database
@@ -88,7 +89,7 @@ def main():
                   [sg.Multiline('', size=(40,20), key='_DISPLAY_')],
                   [sg.Text('Total:', size=(20,1)), sg.Text('0.00', key='_TOTAL_', size=(20,1))],
                   [sg.Button('Scan', bind_return_key=True), sg.Button('Pay'), sg.Button('History')],
-                  [sg.Button('EXIT')]
+                  [sg.Button('Admin Login'),sg.Button('EXIT')]
                  ]
 
     windowMain = sg.Window('The BEST Register', layoutMain, default_button_element_size=(10,2), auto_size_buttons=False)
@@ -141,7 +142,11 @@ def main():
         # Accessing the transaction history
         if eventMain in ('History'):
             windowHistoryActive = True
-            
+         # Admin login
+        if eventMain in ('Admin Login'):
+            if (admin_login.AdminLogin()):
+                admin_panel.Panel()
+ 
             # Window setup
             layoutHistory = [
                              [sg.Multiline('', size=(40,20), key='_HISTORY_')],
