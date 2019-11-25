@@ -23,6 +23,13 @@ user = db.users
 
 reg_users = {'_id':'temp'}
 
+def IsAccount(un):
+    ids = user.find()
+    for key in ids:
+        if un == key['_id']:
+            return True
+    return False
+
 
 def AddAccount(un,pw):
     password_utf = pw.encode('utf-8')
@@ -72,12 +79,13 @@ def UserLogin():
         [sg.Text('Password'), sg.Input(key='-password-', size = (20,1), password_char='*')],
         [sg.T('', size =(6,1)), sg.Button('Login',bind_return_key=True), sg.Button('Exit')], 
     ]
-    un = sg.Window('Employee Login', layout2,
+    un = sg.Window('Employee', layout2,
                     auto_size_text = True,
                     text_justification='r',
                     grab_anywhere=False,
                     default_button_element_size=(3,1)
                    )
+
 
     while True:
         ev1, input = un.Read()
@@ -88,14 +96,14 @@ def UserLogin():
              
         username = input['-username-']
         password = input['-password-']
-
+        isAc = IsAccount(username)
         if LoginCheck(username, password) and ev1 in ('Login'):
             un.Close()
             return True
         
-        elif not LoginCheck(username, password) and ev1 in ('Login'):
+        if not LoginCheck(username, password) and ev1 in ('Login') and  not isAc:
             inval = [
-                [sg.Text('Invalid credentials provided. Please try again.')],
+                [sg.Text('This username does not have an account. Please try again.')],
                 [sg.Button('Ok', bind_return_key=True)]
             ]
             err = sg.Window('Inccorect username or password', inval)
@@ -104,6 +112,19 @@ def UserLogin():
                 if ev2 in (None, 'Ok'):
                     err.Close()
                     break
+                    
+        if not LoginCheck(username, password) and ev1 in ('Login') and isAc:
+            inval = [
+                [sg.Text('Incorrect password. Please try again.')],
+                [sg.Button('Ok', bind_return_key=True)]
+            ]
+            err = sg.Window('Inccorect username or password', inval)
+            while True:
+                ev2, okay = err.Read()
+                if ev2 in (None, 'Ok'):
+                    err.Close()
+                    break
+
 
 def main():
     UserLogin()
