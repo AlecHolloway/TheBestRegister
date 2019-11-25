@@ -52,7 +52,7 @@ def Panel():
             [sg.Text('Username', size=(10,1)), sg.Input(key='-un-')],
             [sg.Text('Password', size=(10,1)), sg.Input(key='-pw1-')],
             [sg.Text('Confirm password', size=(20,1)), sg.Input(key='-pw2-')],
-            [sg.Button('Submit', size=(10, 1)), sg.Button('Cancel', size=(10, 1))]]
+            [sg.Button('Submit', size=(10, 1), bind_return_key=True), sg.Button('Cancel', size=(10, 1))]]
             window2 = sg.Window('Add Account', layout2, auto_size_text = True,default_button_element_size=(10, 1), size=(512,120))
             addAcc = True
             while addAcc:
@@ -109,7 +109,7 @@ def Panel():
                             break
                     
         if event == 'Delete Account':
-            layout3 = [[sg.Text('Enter the username of the account to be deleted', size=(50,1))],
+            layout3 = [[sg.Text('Enter the username of the account to be deleted', size=(20,1))],
             [sg.Input(key='-user-')],
             [sg.Button('Submit', size=(10,1),bind_return_key=True), sg.Button('Cancel', size=(10,1))]]
         
@@ -129,14 +129,15 @@ def Panel():
                     ]
                     login.RemoveAccount(user3)
                     deleted = sg.Window('Deletion successful', dele)
-                    while True:
+                    delOkay = True
+                    while delOkay:
                         ev2, okay = deleted.Read()
-                        if ev2 in (None, 'Ok'):
+                        if ev2 is None or ev2 == 'Ok':
                             deleted.Close()
-                            window3.Close()
-                            break
                             break
 
+                    window3.Close()
+                    break
                 if event3 == 'Submit' and un3Len == 0:
                     inval = [
                             [sg.Text('Cannot delete nonexistent account. Please try again.')],
