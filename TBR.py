@@ -207,7 +207,7 @@ def main():
             if eventHistory in ('Print All'):
                 print("--Displaying all transactions--")
 
-########################################################################################################
+#########################################################################################################
                 def RetAll():
                     #Connect to the database
                     client = pymongo.MongoClient("mongodb+srv://chapiiin:password20@cluster0-6dsmr.gcp.mongodb.net/test?retryWrites=true&w=majority")
@@ -272,7 +272,7 @@ def main():
                     print_all()
                     
                 
-########################################################################################################
+#########################################################################################################
             if eventHistory in ('Search'):
                 if valuesHistory['_TID_']:
                     criteria = 'TransactionID'
