@@ -118,7 +118,7 @@ def main():
                           [sg.Button('Jogger'), sg.Button('EXIT')]
                          ]
                   
-            windowItem = sg.Window('Select Items', layoutItem, default_button_element_size=(6,2), auto_size_buttons=False)
+            windowItem = sg.Window('Select Items', layoutItem, default_button_element_size=(8,2), auto_size_buttons=False)
         
         # Completing a transaction
         if eventMain in ('Pay'):
