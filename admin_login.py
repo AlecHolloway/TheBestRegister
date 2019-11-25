@@ -1,3 +1,5 @@
+#Reference used:    https://github.com/PySimpleGUI/PySimpleGUI/blob/master/DemoPrograms/Demo_Password_Login.py
+
 import sys
 
 if sys.version_info[0] >= 3:
@@ -70,7 +72,6 @@ def AdminLogin():
         if ev1 == None or ev1 == 'Exit':
             un.Close()
             break
-
         username = input['-username-']
         password = input['-password-']
         #RemoveAccount('admin')
