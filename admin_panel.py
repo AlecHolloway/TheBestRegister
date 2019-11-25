@@ -9,6 +9,7 @@ import hashlib
 import datetime
 import hashlib
 import string
+import print_history
 from pygrok import Grok
 import time
 from datetime import datetime as dt
@@ -24,13 +25,12 @@ user = db.users
 
 
 def Panel():
-    layout0 = [[sg.Text('', size=(20, 1), font='Helvetica, 18')],
-    [sg.Button('Print History', size=(20, 1))],
-    [sg.Button('Add Account', size=(10, 1)), sg.Button('Delete Account', size=(10, 1))],
-    [sg.Button('Reset Password', size=(10, 1))],
+    layout0 = [
+    [sg.Button('Print History', size=(20, 1)), sg.Button('Add Account', size=(20, 1))],
+    [sg.Button('Delete Account', size=(20, 1)), sg.Button('Reset Password', size=(20, 1))],
     [sg.Button('Exit', size=(10, 1))]]
 
-    window0 = sg.Window('Administrator Control Panel', layout0, default_button_element_size=(10, 10),
+    window0 = sg.Window('Administrator Control Panel', layout0, default_button_element_size=(10, 1),
        auto_size_buttons=False)
     while True:
         event,value=window0.Read()
@@ -45,7 +45,7 @@ def Panel():
             [sg.Text('Confirm password'), sg.Input(key='-pw2-')],
 
             [sg.Button('Submit', size=(10, 1)), sg.Button('Cancel', size=(10, 1))]]
-            window2 = sg.Window('Add Account', layout2, default_button_element_size=(10, 10))
+            window2 = sg.Window('Add Account', layout2, default_button_element_size=(10, 10), size=(80,55))
 
             while True:
                 event2, value2 = window2.Read()
@@ -118,7 +118,7 @@ def Panel():
             [sg.T('',size=(4,1)),sg.Text('New password'), sg.Input(key='-pw1-')],
             [sg.Text('Confirm new password'), sg.Input(key='-pw2-')],
 
-            [sg.Button('Submit', size=(10, 1)), sg.Button('Cancel', size=(10, 1))]]
+            [sg.Button('Submit', size=(10, 1), bind_return_key=True), sg.Button('Cancel', size=(10, 1))]]
             window4 = sg.Window('Password reset', layout4, default_button_element_size=(10, 10))
 
             while True:
@@ -133,7 +133,7 @@ def Panel():
                     login.PasswordReset(user4, pass41)
                     layout41 = [
                         [sg.Text('Password has been reset.')],
-                        [sg.Button('Ok')]
+                        [sg.Button('Ok', bind_return_key=True)]
                     ]
                     re = sg.Window('Reset successful.', layout41)
                     while True:
@@ -155,9 +155,12 @@ def Panel():
                         if ev2 in (None, 'Ok'):
                             err.Close()
                             break
-                            
+                          
+        if event == 'Print History':
+            print_history.PrintAll()
+
 def main():
-    print('help')
+    Panel()
 
 
 if __name__ == '__main__':
