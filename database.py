@@ -158,7 +158,7 @@ class database:
 
     #Combined search attempt
     def search_database(criteria, term, startDate, endDate, transactions = transactionsAtt):
-
+        history_array = []
         # First, get a list of stuff between startDate and endDate
         # if nothing was entered for either, then ignore it
         # do the searches below on the list of stuff between start and end date
@@ -196,11 +196,15 @@ class database:
                 print("ERROR: Start date cannot be greater than end date.")
                 print()
                 print()
+                history_array.extend(["ERROR: Start date cannot be greater than end date."])
+                return history_array
                 database.search_database(criteria, term, startDate, endDate)
             if start_date == end_date:
                 print("ERROR: End date must be at least one day later than the start date.")
                 print()
                 print()
+                history_array.extend(["ERROR: End date must be at least one day later than the start date."])
+                return history_array
                 database.search_database(criteria, term, startDate, endDate)
             print()    
             print("-----Displaying information for the purchases made on or after ", startDate, " and before ", endDate, "-----")
@@ -218,7 +222,9 @@ class database:
             if executed == False:
                 print("**NO TRANSACTIONS OCCURRED DURING THIS TIME RANGE**")
                 print()
-                print(date_range_array)
+                history_array.extend(["**NO TRANSACTIONS OCCURRED DURING THIS TIME RANGE**"])
+                
+                return history_array
                 database.search_database(criteria, term, startDate, endDate)
             print()
             print()
@@ -231,26 +237,32 @@ class database:
         
             for i in start:
                 
-                a = 'ID:' + i['TransactionID'] 
-                b = 'Items:' + str(i['Items'])         
-                c = 'Timestamp:' + i['Timestamp']
+                a = 'ID:' + i['TransactionID'] + '\n'
+                b = 'Items:' + str(i['Items']) + '\n'        
+                c = 'Timestamp:' + i['Timestamp'] + '\n'
                 #d = ('Transaction hash:', i['this_hash'])
-                e = 'Store Location:' + i['Location']        
-                f = 'Transaction Cost:' + i['PaymentTotal']
-                g = 'Payment Method:' + i['PaymentInfo'] 
+                e = 'Store Location:' + i['Location'] + '\n'        
+                f = 'Transaction Cost:' + i['PaymentTotal'] + '\n'
+                g = 'Payment Method:' + i['PaymentInfo'] + '\n' + '\n'
                 
 
-                history_array.extend([ a , '\n' + b,'\n' + c,'\n' + e , '\n' + f,'\n' + g])
+                history_array.extend([a,b,c,e,f,g])
+                print("History array: ")
+                print(history_array)
+
+
+                if history_array == []:
+                    history_array.extend(["No results found"])
+                    return history_array
                 
             return history_array
         
-            if history_array == []:
-                history_array = "No results found"
-        
         elif criteria in ('Items'):
             history_array = "NOT YET IMPLEMENTED"
-        
-        return history_array # Stuff that will show up in '_HISTORY_'
+
+        else:
+            history_array.extend(["TRANSACTION DOES NOT EXIST"])            
+            return history_array # Stuff that will show up in '_HISTORY_'
 
     #Connor's search 
 ##    def search_database():
