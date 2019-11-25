@@ -14,8 +14,14 @@ from datetime import datetime as dt
 # User login module
 import login
 
+# Admin login module
+import admin_login
+
 # Database functionality
 from database import database
+
+# Administrator control panel
+import admin_panel
 
 # Global variables
 historyList = []
@@ -87,7 +93,7 @@ def main():
                   [sg.Multiline('', size=(40,20), key='_DISPLAY_')],
                   [sg.Text('Total:', size=(20,1)), sg.Text('0.00', key='_TOTAL_', size=(20,1))],
                   [sg.Button('Scan', bind_return_key=True), sg.Button('Pay'), sg.Button('History')],
-                  [sg.Button('EXIT')]
+                  [sg.Button('Admin Login'), sg.Button('EXIT')]
                  ]
 
     windowMain = sg.Window('The BEST Register', layoutMain, default_button_element_size=(10,2), auto_size_buttons=False)
@@ -100,6 +106,9 @@ def main():
         if eventMain in (None, 'EXIT'):
             windowMain.Close()
             break
+        if eventMain in ('Admin Login'):
+            if(admin_login.AdminLogin()):
+                admin_panel.Panel()
         
         # Scanning items
         if eventMain in ('Scan'):
@@ -118,7 +127,7 @@ def main():
                           [sg.Button('Jogger'), sg.Button('EXIT')]
                          ]
                   
-            windowItem = sg.Window('Select Items', layoutItem, default_button_element_size=(8,2), auto_size_buttons=False)
+            windowItem = sg.Window('Select Items', layoutItem, default_button_element_size=(6,2), auto_size_buttons=False)
         
         # Completing a transaction
         if eventMain in ('Pay'):
@@ -158,8 +167,6 @@ def main():
             print(f"receiptList: {receiptList}")
         if eventMain in ('historyList'):
             print(f"historyList: {historyList}")
-        
-        
         # Item selection window event loop
         while windowItemActive:
             eventItem, valuesItem = windowItem.Read()
