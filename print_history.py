@@ -31,9 +31,9 @@ def RetAll():
     for x in last_doc:
         print("Last transaction: ", x)
     lastTransactionID = x['_id']
-    print("Last transaction ID: ", lastTransactionID)
-    print()
-    print()
+    #print("Last transaction ID: ", lastTransactionID)
+    #print()
+    #print()
     
     history_array = []
     item_num = 1
@@ -59,7 +59,7 @@ def RetAll():
 
         
             
-def main():
+def PrintAll():
     
     column = [[sg.Text('stupid2', justification='center', size=(50,1))]]
 
@@ -72,4 +72,5 @@ def main():
         ev, va = window.Read()
 
 
-main()
+if __name__ == '__main__':
+	main()
