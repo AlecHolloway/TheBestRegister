@@ -169,12 +169,17 @@ class database:
             i = 0.0
             print()
 
-            # x = startDate
-            # y = endDate
             
             # print list of dates within range
-            start = datetime.datetime.strptime(startDate, "%B %d, %Y")
-            end = datetime.datetime.strptime(endDate, "%B %d, %Y")
+            try:
+                start = datetime.datetime.strptime(startDate, "%B %d, %Y")
+                end = datetime.datetime.strptime(endDate, "%B %d, %Y")
+            except:
+                print("Date must be entered in correct format. (Ex: November 25, 2019)")
+                history_array.extend(["Date must be entered in correct format. (Ex: November 25, 2019)"])
+                return history_array
+                
+                
             date_array = \
                 (start + datetime.timedelta(days=x) for x in range(0, (end - start).days))
 
@@ -228,7 +233,13 @@ class database:
                 database.search_database(criteria, term, startDate, endDate)
             print()
             print()
+        # Return result if no filter is selected but start/end date is given
+        if (term == ""):
+            history_array.extend(["Please enter a filter to search by."])
+            return history_array
+        
 
+        
         #if no date range selected        
         if criteria in ('TransactionID', 'Location', 'PaymentInfo'):
             history_array = []
@@ -254,140 +265,10 @@ class database:
             if history_array == []:
                 history_array.extend(["No results found"])
                 return history_array
-                    
+                
             return history_array
-        
-        elif criteria in ('Items'):
-            history_array = "NOT YET IMPLEMENTED"
+    
 
         else:
             history_array.extend(["TRANSACTION DOES NOT EXIST"])            
             return history_array # Stuff that will show up in '_HISTORY_'
-
-    #Connor's search 
-##    def search_database():
-##        #BE CAREFUL UNCOMMENTING NEXT LINE
-##        print()
-##        transactions = db.transactions
-##        date_range_array = []
-##
-##        #make classes callable
-##        blockchain = Blockchain()
-##        block = Block(0,0,0)
-##        print()
-##        print("----------Program Running----------")
-##        print("Current date:", block.timestamp)
-##        print()   
-##
-##
-##        # Give choice of searching by date or transaction ID
-##        answer = str(input("Would you like to search by date or by transaction ID (enter 'date' or 'id'): "))
-##        print()
-##        print()
-##
-##        print()
-##        if (answer == "id"):
-##            # searching the database by transaction number
-##            answer = input("Enter which transaction ID you would like to display: ")
-##
-##            # Error checking for ID to be an int
-##            while answer.isdigit() == False:
-##                print("ERROR: Please enter a positive valid integer for transaction ID")
-##                answer = input("Enter which transaction ID you would like to display: ")
-##            ## turns x into int
-##            if answer.isdigit():
-##                answer = int(answer)
-##
-##            i = 0        
-##            results = transactions.find({"_id":answer})
-##            print("Displaying information for transaction ID: ", answer)
-##            for x in results:
-##                print(x)
-##
-##        elif (answer == "date"):
-##            # searching by date
-##            # declare variables for start and end date
-##            i = 0.0
-##            x = str(input("Enter the start date as Month Day, Year (Ex: November 18, 2019) **Start date is inclusive**: "))
-##            y = str(input("Enter the end date as Month Day, Year (Ex: November 19, 2019) **End date is non-inclusive**: "))
-##            print()
-##
-##            # print list of dates within range
-##            start = datetime.datetime.strptime(x, "%B %d, %Y")
-##            end = datetime.datetime.strptime(y, "%B %d, %Y")
-##            date_array = \
-##                (start + datetime.timedelta(days=x) for x in range(0, (end - start).days))
-##
-##            # Date of transactions within range entered
-##            for date_object in date_array:
-##                #print(date_object.strftime("%B %d, %Y"))
-##                date_object.strftime("%B %d, %Y")
-##                date_range_array.append(date_object.strftime("%B %d, %Y"))
-##
-##            print()
-##
-##            # Compare the start date
-##            start_date = dt.strptime(x, "%B %d, %Y")
-##            iter_date = "November 18, 2019"
-##            end_date = dt.strptime(y, "%B %d, %Y")
-##        
-##            # Error checking to see if start day is valid
-##            if start_date > end_date:
-##                print("ERROR: Start date cannot be greater than end date.")
-##                print()
-##                print()
-##                search_database()
-##            if start_date == end_date:
-##                print("ERROR: End date must be at least one day later than the start date.")
-##                print()
-##                print()
-##                search_database()
-##            print()    
-##            print("-----Displaying information for the purchases made on or after ", x, " and before ", y, "-----")
-##            print()
-##            z = 0
-##            i = 0
-##            executed = False
-##            for i in range(len(date_range_array)):     
-##                search = transactions.find({'Timestamp': date_range_array[i]})
-##                for match in search:
-##                    print(match)
-##                    executed = True
-##                i += 1
-##
-##            if executed == False:
-##                print("**NO TRANSACTIONS OCCURRED DURING THIS TIME RANGE**")
-##                print()
-##                search_database()
-##            print()
-##            print()
-##            
-##        else:
-##            print("ERROR: INVALID INPUT")
-##            print()
-##            print()
-##            search_database()
-##
-##        print()
-##        print()
-##        search_database()
-
-
-
-        #Hayden's search
-##    def search(criteria, term, transactions = transactionsAtt):
-##        
-##        if criteria in ('TransactionID', 'Location', 'PaymentInfo'):
-##            results = []
-##            for x in transactions.find({criteria:term}):
-##                results.append(x)
-##            if results == []:
-##                results = "No results found"
-##        
-##        elif criteria in ('Items'):
-##            results = "NOT YET IMPLEMENTED"
-##        
-##        elif criteria in ('Timestamp'):
-##            results = "NOT YET IMPLEMENTED"
-##        
-##        return results # Stuff that will show up in '_HISTORY_'
