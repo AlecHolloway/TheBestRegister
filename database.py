@@ -218,22 +218,50 @@ class database:
 ##            print()    
 ##            print("-----Displaying information for the purchases made on or after ", startDate, " and before ", endDate, "-----")
 ##            print()
+
+            #Find the last transaction
+            transactionsAtt = storage.transactions
+            last_doc = transactionsAtt.find().sort('TransactionID', pymongo.DESCENDING).limit(1)
+
+            #Find the last transaction ID
+            for x in last_doc:
+                lastTransactionID = x['TransactionID']
+
+            lastTransactionID = int(lastTransactionID)
+            
             z = 0
             i = 1
             dateMatch = []
+            history_array = []
             executed = False
-            for i in range(1):     
-                search = transactions.find({'Timestamp': startDate})
-                for match in search:
-                    print(match)
-                    print("--date match found--")
-                    dateMatch.extend([match])
-                    executed = True
+                 
+            start = transactions.find({'Timestamp': startDate})
+            for match in start:
+                print(match)
+                print("--date match found--")
+                a = 'ID:' + match['TransactionID'] + '\n'
+                b = 'Items:' + str(match['Items']) + '\n'        
+                c = 'Timestamp:' + match['Timestamp'] + '\n'
+                #d = ('Transaction hash:', i['this_hash'])
+                e = 'Store Location:' + match['Location'] + '\n'        
+                f = 'Transaction Cost:' + match['PaymentTotal'] + '\n'
+                g = 'Payment Method:' + match['PaymentInfo'] + '\n' + '\n'
 
+                history_array.extend([a,b,c,e,f,g])
+                executed = True
+                    
+            return history_array
+                
+            
 
-
-                i += 1
-
+#############################################################################
+            
+            if history_array == []:
+                history_array.extend(["No results found"])
+                return history_array
+                
+            
+################################################################################3
             print("date match array:", dateMatch)
             return dateMatch
         
