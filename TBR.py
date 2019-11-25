@@ -9,30 +9,6 @@ else:
 import copy
 
 # For recording timestamps
-from datetime import datetime as dt
-
-# User login module
-import login
-
-# Admin login module
-import admin_login
-
-# Database functionality
-from database import database
-
-# Administrator control panel
-import admin_panel
-# For PySimpleGUI
-import sys
-if sys.version_info[0] >= 3:
-    import PySimpleGUI as sg
-else:
-    import PySimpleGUI27 as sg
-
-# For copying lists before clearing them
-import copy
-
-# For recording timestamps
 import datetime
 
 
@@ -44,6 +20,7 @@ import admin_login
 
 # Database functionality
 from database import database
+import pymongo
 
 # Administrator control panel
 import admin_panel
@@ -95,6 +72,7 @@ def main():
     windowPayActive = False
     windowReceiptActive = False
     windowHistoryActive = False
+    print_window = False
     
     # Login event loop
     while True:
@@ -152,7 +130,7 @@ def main():
                           [sg.Button('Jogger'), sg.Button('EXIT')]
                          ]
                   
-            windowItem = sg.Window('Select Items', layoutItem, default_button_element_size=(8,2), auto_size_buttons=False)
+            windowItem = sg.Window('Select Items', layoutItem, default_button_element_size=(6,2), auto_size_buttons=False)
         
         # Completing a transaction
         if eventMain in ('Pay'):
@@ -173,6 +151,7 @@ def main():
         
         # Accessing the transaction history
         if eventMain in ('History'):
+            print_all_called = False
             windowHistoryActive = True
             
             # Window setup
@@ -180,8 +159,9 @@ def main():
                              [sg.Multiline('', size=(100,20), key='_HISTORY_')],
                              [sg.Text('Enter search terms: ', size=(40,1))],
                              [sg.Input(size=(40,1), key='_SEARCH_', do_not_clear=True)],
-                             [sg.Radio('Transaction ID', 1, True, key='_TID_'), sg.Radio('Location', 1, key='_L_'), sg.Radio('Pay Info', 1, key='_PI_')],
-                             [sg.Button('Search', bind_return_key=True), sg.Button('EXIT')],
+                             [sg.Radio('Transaction ID', 1, True, key='_TID_'), sg.Radio('Location', 1, key='_L_')],
+                             [sg.Radio('Pay Info', 1, key='_PI_')],
+                             [sg.Button('Search'),sg.Button('Print All'), sg.Button('EXIT')],
                              [sg.Text('Start Date (Ex: November 18, 2019) *Inclusive*: ', size=(35,1)), sg.Text('End Date(Ex: November 19, 2019) *Non-inclusive*: ', size=(40,1))],
                              [sg.Input(size=(40,1), key='_SDATE_', do_not_clear=True), sg.Input(size=(40,1), key='_EDATE_', do_not_clear=True)]
                             ]
@@ -218,11 +198,80 @@ def main():
         while windowHistoryActive:
             eventHistory, valuesHistory = windowHistory.Read()
             
+            
             if eventHistory in (None, 'EXIT'):
                 windowHistoryActive = False
                 windowHistory.Close()
                 break
-            
+
+            if eventHistory in ('Print All'):
+
+#########################################################################################################
+                def RetAll():
+                    #Connect to the database
+                    client = pymongo.MongoClient("mongodb+srv://chapiiin:password20@cluster0-6dsmr.gcp.mongodb.net/test?retryWrites=true&w=majority")
+                    storage = client.TestTBR
+                    transactionsAtt = storage.transactions
+                    
+                    #Find the last transaction
+                    last_doc = transactionsAtt.find().sort('TransactionID', pymongo.DESCENDING).limit(1)
+
+                    #Find the last transaction ID
+                    for x in last_doc:
+                        lastTransactionID = x['TransactionID']
+                    
+                    history_array = []
+                    item_num = "1"
+
+                    lastTransactionID = int(lastTransactionID)
+#                    print("Last transaction ID: ", lastTransactionID)
+                    for x in range(lastTransactionID):
+                    #result = transactions.find()
+                        item_num = str(item_num)
+                    
+                        start = transactionsAtt.find({"TransactionID":item_num})
+                    
+                        for i in start:
+                            
+                            a = ('ID:', i['TransactionID'])
+                            b = ('Items:', i['Items'])        
+                            c = ('Timestamp:', i['Timestamp'])
+                            #d = ('Transaction hash:', i['this_hash'])
+                            e = ('Store Location:', i['Location'])        
+                            f = ('Transaction Cost:', i['PaymentTotal'])
+                            g = ('Payment Method:', i['PaymentInfo'])  
+                            h = ('')
+
+                            history_array.extend([a,'\n',b,'\n',c,'\n',e,'\n',f,'\n',g,'\n',h,'\n'])
+                        item_num = int(item_num) + 1
+                    return history_array
+
+                        
+                            
+                def print_all():
+                    print_all_called = True
+                    column = [[sg.Text('TBR', justification='center', size=(50,1))]]
+
+                    layout5 = [[sg.Text('Below is the printed history', size=(24,1), font='Helvetica, 18')],
+                    [sg.Button('Exit', size=(10,1), bind_return_key=True)],
+                    [sg.Listbox(values=(RetAll()), size=(120,120))],
+
+                    ] 
+
+                    print_window = sg.Window('TBR', layout5, default_element_size=(20, 1), grab_anywhere=False, size=(800,720))
+                    
+                    while print_window:
+                        event1, value1 = print_window.Read()
+                        if event1 == 'Exit':
+                            print_window.Close()
+                            break
+                        break
+   
+                if print_all_called == False:
+                    print_all()
+                    
+                
+#########################################################################################################
             if eventHistory in ('Search'):
                 if valuesHistory['_TID_']:
                     criteria = 'TransactionID'
