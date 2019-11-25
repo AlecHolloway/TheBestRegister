@@ -152,7 +152,7 @@ def main():
                           [sg.Button('Jogger'), sg.Button('EXIT')]
                          ]
                   
-            windowItem = sg.Window('Select Items', layoutItem, default_button_element_size=(6,2), auto_size_buttons=False)
+            windowItem = sg.Window('Select Items', layoutItem, default_button_element_size=(8,2), auto_size_buttons=False)
         
         # Completing a transaction
         if eventMain in ('Pay'):
@@ -181,7 +181,7 @@ def main():
                              [sg.Text('Enter search terms: ', size=(40,1))],
                              [sg.Input(size=(40,1), key='_SEARCH_', do_not_clear=True)],
                              [sg.Radio('Transaction ID', 1, True, key='_TID_'), sg.Radio('Location', 1, key='_L_'), sg.Radio('Pay Info', 1, key='_PI_')],
-                             [sg.Button('Search'), sg.Button('EXIT')],
+                             [sg.Button('Search', bind_return_key=True), sg.Button('EXIT')],
                              [sg.Text('Start Date (Ex: November 18, 2019) *Inclusive*: ', size=(35,1)), sg.Text('End Date(Ex: November 19, 2019) *Non-inclusive*: ', size=(40,1))],
                              [sg.Input(size=(40,1), key='_SDATE_', do_not_clear=True), sg.Input(size=(40,1), key='_EDATE_', do_not_clear=True)]
                             ]
