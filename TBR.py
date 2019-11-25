@@ -13,15 +13,11 @@ from datetime import datetime as dt
 
 # User login module
 import login
-
-# Admin login module
 import admin_login
+import admin_panel
 
 # Database functionality
 from database import database
-
-# Administrator control panel
-import admin_panel
 
 # Global variables
 historyList = []
@@ -93,7 +89,7 @@ def main():
                   [sg.Multiline('', size=(40,20), key='_DISPLAY_')],
                   [sg.Text('Total:', size=(20,1)), sg.Text('0.00', key='_TOTAL_', size=(20,1))],
                   [sg.Button('Scan', bind_return_key=True), sg.Button('Pay'), sg.Button('History')],
-                  [sg.Button('Admin Login'), sg.Button('EXIT')]
+                  [sg.Button('Admin Login'),sg.Button('EXIT')]
                  ]
 
     windowMain = sg.Window('The BEST Register', layoutMain, default_button_element_size=(10,2), auto_size_buttons=False)
@@ -106,9 +102,6 @@ def main():
         if eventMain in (None, 'EXIT'):
             windowMain.Close()
             break
-        if eventMain in ('Admin Login'):
-            if(admin_login.AdminLogin()):
-                admin_panel.Panel()
         
         # Scanning items
         if eventMain in ('Scan'):
@@ -127,7 +120,7 @@ def main():
                           [sg.Button('Jogger'), sg.Button('EXIT')]
                          ]
                   
-            windowItem = sg.Window('Select Items', layoutItem, default_button_element_size=(6,2), auto_size_buttons=False)
+            windowItem = sg.Window('Select Items', layoutItem, default_button_element_size=(9,2), auto_size_buttons=False)
         
         # Completing a transaction
         if eventMain in ('Pay'):
@@ -155,18 +148,27 @@ def main():
                              [sg.Multiline('', size=(40,20), key='_HISTORY_')],
                              [sg.Text('Enter search terms: ', size=(40,1))],
                              [sg.Input(size=(40,1), key='_SEARCH_', do_not_clear=True)],
-                             [sg.Radio('Transaction ID', 1, True, key='_TID_'), sg.Radio('Date/Time', 1, key='_D/T_'), sg.Radio('Location', 1, key='_L_')],
+                             [sg.Radio('Transaction ID', 1, True, key='_TID_'), sg.Radio('Location', 1, key='_L_')],
                              [sg.Radio('Pay Info', 1, key='_PI_'), sg.Radio('Item ID', 1, key='_IID_')],
-                             [sg.Button('Search'), sg.Button('EXIT')]
+                             [sg.Text('Start Date: ', size=(20,1)), sg.Text('End Date: ', size=(20,1))],
+                             [sg.Input(size=(20,1), key='_SDATE_', do_not_clear=True), sg.Input(size=(20,1), key='_EDATE_', do_not_clear=True)],
+                             [sg.Button('Search'), sg.Button('Print'), sg.Button('EXIT')]
                             ]
                   
             windowHistory = sg.Window('Transaction History', layoutHistory, default_button_element_size=(6,2), auto_size_buttons=False)
             
+        # Admin login
+        if eventMain in ('Admin Login'):
+            if (admin_login.AdminLogin()):
+                admin_panel.Panel()
+        
         # Buttons for debugging
         if eventMain in ('receiptList'):
             print(f"receiptList: {receiptList}")
         if eventMain in ('historyList'):
             print(f"historyList: {historyList}")
+        
+        
         # Item selection window event loop
         while windowItemActive:
             eventItem, valuesItem = windowItem.Read()
@@ -196,12 +198,36 @@ def main():
                 windowHistoryActive = False
                 windowHistory.Close()
                 break
+                
+            if eventHistory in ('Print'):
+                # Login event loop
+                while True:
+                    access = False
+                    access = admin_login.AdminLogin()
+                    break
+            
+                if access == True:
+                    # Print history
+                    layoutPrint = [
+                                   [sg.Text(valuesHistory['_HISTORY_'])],
+                                   [sg.Button('EXIT')]
+                                  ]
+                          
+                    windowPrint = sg.Window('Print', layoutPrint, default_button_element_size=(6,2), auto_size_buttons=False)
+                    windowPrintActive = True
+                    
+                    # Print window event loop
+                    while windowPrintActive:
+                        eventPrint, valuesPrint = windowPrint.Read()
+                        
+                        if eventPrint in (None, 'EXIT'):
+                            windowPrintActive = False
+                            windowPrint.Close()
+                            break
             
             if eventHistory in ('Search'):
                 if valuesHistory['_TID_']:
                     criteria = 'TransactionID'
-                elif valuesHistory['_D/T_']:
-                    criteria = 'Timestamp'
                 elif valuesHistory['_L_']:
                     criteria = 'Location'
                 elif valuesHistory['_PI_']:
@@ -210,8 +236,10 @@ def main():
                     criteria = 'Items'
                     
                 term = valuesHistory['_SEARCH_']
+                startDate = valuesHistory['_SDATE_']
+                endDate = valuesHistory['_EDATE_']
                 
-                display = database.search(criteria, term)
+                display = database.search(criteria, term, startDate, endDate)
                 windowHistory.Element('_HISTORY_').Update(display)
                 
         
