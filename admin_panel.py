@@ -61,16 +61,30 @@ def Panel():
                 pass21 = value2['-pw1-']
                 pass22 = value2['-pw2-']
                 unLength = length(user2)
-
+                pwLength = length(pass21)
+                isAccount = login.IsAccount(user2)
                 if event2 is None or event2 == 'Cancel':
                     window2.Close()
                     break
-                if unLength < 1:
+                if event2 == 'Submit' and isAccount:
+                    unva = [
+                        [sg.Text('This account already exists')],
+                        [sg.Button('Ok', bind_return_key=True)]
+                        ]
+                    ero = sg.Window('Invalid credentials provided.', unva)
+                    nullName = True
+                    while nullName:
+                        ev2, okay = ero.Read()
+                        if ev2 is None or ev2 == 'Ok':
+                            ero.Close()
+                            break
+                            break
+                if unLength < 1 or pwLength < 1:
                     unval = [
-                        [sg.Text('Invalid credentials provided. Please try again.')],
+                        [sg.Text('Username or password cannot be null')],
                         [sg.Button('Ok')]
                         ]
-                    erro = sg.Window('Username or password cannot be null', unval)
+                    erro = sg.Window('Invalid credentials provided.', unval)
                     nullName = True
                     while nullName:
                         ev2, okay = erro.Read()
@@ -78,7 +92,7 @@ def Panel():
                             erro.Close()
                             break
                             break
-                if event2 == 'Submit' and pass21 == pass22 and unLength > 0:
+                if event2 == 'Submit' and pass21 == pass22 and pwLength > 0 and not isAccount:
                     login.AddAccount(user2, pass21)
                     layout21 = [
                         [sg.Text('User account has been created.')],
@@ -95,21 +109,21 @@ def Panel():
                     window2.Close()
                     break
                 if event2 == 'Submit' and pass21 != pass22:
-                    inval = [
-                        [sg.Text('Invalid credentials provided. Please try again.')],
-                        [sg.Button('Ok')]
-                    ]
-                    err = sg.Window('Passwords did not match', inval)
-                    passwordsMatch = False
-                    while passwordsMatch:
-                        ev2, okay = err.Read()
+                    unv = [
+                        [sg.Text('Passwords do not match. Try again.')],
+                        [sg.Button('Ok', bind_return_key=True)]
+                        ]
+                    er = sg.Window('Invalid entry', unv)
+                    nullName = True
+                    while nullName:
+                        ev2, okay = er.Read()
                         if ev2 is None or ev2 == 'Ok':
-                            err.Close()
+                            er.Close()
                             break
                             break
-                    
         if event == 'Delete Account':
-            layout3 = [[sg.Text('Enter the username of the account to be deleted', size=(20,1))],
+
+            layout3 = [[sg.Text('Enter the username of the account to be deleted', size=(40,1))],
             [sg.Input(key='-user-')],
             [sg.Button('Submit', size=(10,1),bind_return_key=True), sg.Button('Cancel', size=(10,1))]]
         
@@ -119,10 +133,12 @@ def Panel():
                 event3, value3 = window3.Read()
                 user3 = value3['-user-']
                 un3Len = length(user3)
+
+                isAccount = login.IsAccount(user3)
                 if event3 is None or event3 == 'Cancel':
                     window3.Close()
                     break
-                if event3 == 'Submit' and un3Len != 0:
+                if event3 == 'Submit' and isAccount:
                     dele = [
                         [sg.Text('User account has been deleted.')],
                         [sg.Button('Ok')]
@@ -135,10 +151,10 @@ def Panel():
                         if ev2 is None or ev2 == 'Ok':
                             deleted.Close()
                             break
-
+                            break
                     window3.Close()
                     break
-                if event3 == 'Submit' and un3Len == 0:
+                if event3 == 'Submit' and not isAccount:
                     inval = [
                             [sg.Text('Cannot delete nonexistent account. Please try again.')],
                             [sg.Button('Ok')]
@@ -151,7 +167,9 @@ def Panel():
                             erd.Close()
                             break
                             break
-
+                            
+            #testing
+            window3.Close()
         if event == 'Reset Password':
             layout4 = [[sg.Text('', size=(20, 1), font='Helvetica, 18')],
             [sg.T('', size=(7,1)),sg.Text('Username'), sg.Input(key='-un-')],
@@ -168,10 +186,11 @@ def Panel():
                 pass42 = value4['-pw2-']
                 resLen = length(user4)
                 pasLen = length(pass41)
+                isAccount = login.IsAccount(user4)
                 if event4 is None or event4 == 'Cancel':
                     window4.Close()
                     break
-                if event4 == 'Submit' and pass41 == pass42 and resLen != 0:
+                if event4 == 'Submit' and pass41 == pass42 and isAccount and pasLen > 0:
                     login.PasswordReset(user4, pass41)
                     layout41 = [
                         [sg.Text('Password has been reset.')],
@@ -188,22 +207,36 @@ def Panel():
                     break
                 if event4 == 'Submit' and pass41 != pass42:
                     inval = [
-                        [sg.Text('Invalid credentials provided. Please try again.')],
+                        [sg.Text('Passwords do not match. Try again.')],
                         [sg.Button('Ok')]
                     ]
-                    err = sg.Window('Passwords did not match', inval)
+                    err = sg.Window('Passwords did not match. Try again.', inval)
                     while True:
                         ev2, okay = err.Read()
                         if ev2 in (None, 'Ok'):
                             err.Close()
                             break
 
-                if event4 == 'Submit' and resLen == 0 or pasLen == 0:
+                if event4 == 'Submit' and not isAccount:
                     inval = [
                             [sg.Text('Cannot reset nonexistent account. Please try again.')],
                             [sg.T('', size=(15,1)),sg.Button('Ok')]
                             ]
                     erd = sg.Window('Cannot reset nonexistent account. Please try again.', inval)
+                    invalid_user = True
+                    while invalid_user:
+                        ev2, okay = erd.Read()
+                        if ev2 is None or ev2 == 'Ok':
+                            erd.Close()
+                            break
+                            break
+
+                if event4 == 'Submit' and pasLen < 1:
+                    inval = [
+                            [sg.Text('Passwords cannot be null. Try again.')],
+                            [sg.T('', size=(15,1)),sg.Button('Ok')]
+                            ]
+                    erd = sg.Window('Cannot reset password. Try again.', inval)
                     invalid_user = True
                     while invalid_user:
                         ev2, okay = erd.Read()
