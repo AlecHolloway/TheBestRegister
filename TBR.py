@@ -9,7 +9,8 @@ else:
 import copy
 
 # For recording timestamps
-from datetime import datetime as dt
+import datetime
+
 
 # User login module
 import login
@@ -155,9 +156,11 @@ def main():
                              [sg.Multiline('', size=(100,20), key='_HISTORY_')],
                              [sg.Text('Enter search terms: ', size=(40,1))],
                              [sg.Input(size=(40,1), key='_SEARCH_', do_not_clear=True)],
-                             [sg.Radio('Transaction ID', 1, True, key='_TID_'), sg.Radio('Date/Time', 1, key='_D/T_'), sg.Radio('Location', 1, key='_L_')],
+                             [sg.Radio('Transaction ID', 1, True, key='_TID_'), sg.Radio('Location', 1, key='_L_')],
                              [sg.Radio('Pay Info', 1, key='_PI_'), sg.Radio('Item ID', 1, key='_IID_')],
-                             [sg.Button('Search'), sg.Button('EXIT')]
+                             [sg.Button('Search'), sg.Button('EXIT')],
+                             [sg.Text('Start Date (Ex: November 18, 2019) *Inclusive*: ', size=(35,1)), sg.Text('End Date(Ex: November 19, 2019) *Non-inclusive*: ', size=(40,1))],
+                             [sg.Input(size=(40,1), key='_SDATE_', do_not_clear=True), sg.Input(size=(40,1), key='_EDATE_', do_not_clear=True)]
                             ]
                   
             windowHistory = sg.Window('Transaction History', layoutHistory, default_button_element_size=(6,2), auto_size_buttons=False)
@@ -200,8 +203,6 @@ def main():
             if eventHistory in ('Search'):
                 if valuesHistory['_TID_']:
                     criteria = 'TransactionID'
-                elif valuesHistory['_D/T_']:
-                    criteria = 'Timestamp'
                 elif valuesHistory['_L_']:
                     criteria = 'Location'
                 elif valuesHistory['_PI_']:
@@ -210,8 +211,10 @@ def main():
                     criteria = 'Items'
                     
                 term = valuesHistory['_SEARCH_']
+                startDate = valuesHistory['_SDATE_']
+                endDate = valuesHistory['_EDATE_']
                 
-                display = database.search(criteria, term)
+                display = database.search_database(criteria, term, startDate, endDate)
                 windowHistory.Element('_HISTORY_').Update(display)
                 
         
@@ -226,8 +229,12 @@ def main():
             
             if eventPay in ('Cash', 'Check', 'Credit', 'Debit'):
                 payMethod = eventPay
-            
-                historyEntry['Timestamp'] = str(dt.now())
+
+                # Change date format to excluse hours/minutes
+                dt = datetime.datetime.now()
+                timestamp = dt.strftime("%B %d, %Y")
+                
+                historyEntry['Timestamp'] = timestamp
                 historyEntry['PaymentTotal'] = "{0:.2f}".format(priceSum)
                 historyEntry['PaymentInfo'] = payMethod
                 historyEntry['Items'] = copy.deepcopy(itemIDList)

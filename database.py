@@ -12,6 +12,8 @@ else:
 
 # For blockchain functionality
 import datetime
+from datetime import datetime as dt
+
 import hashlib
 
 # For database functionality
@@ -35,7 +37,8 @@ class Block:
     this_hash = None
     nonce = 0
     previous_hash = None
-    timestamp = datetime.datetime.now()
+    dt = datetime.datetime.now()
+    timestamp = dt.strftime("%B %d, %Y")
     
     def __init__(self, data):
         self.data = data
@@ -154,8 +157,73 @@ class database:
 
 
     #Combined search attempt
-    def search(criteria, term, transactions = transactionsAtt):
+    def search_database(criteria, term, startDate, endDate, transactions = transactionsAtt):
+
+        # First, get a list of stuff between startDate and endDate
+        # if nothing was entered for either, then ignore it
+        # do the searches below on the list of stuff between start and end date
+        if (startDate != "") and (endDate != ""):
+            print("Date range selected")
+            print("Start date: ", startDate)
+            print("End date: ", endDate)
+            i = 0.0
+            print()
+
+            # x = startDate
+            # y = endDate
+            
+            # print list of dates within range
+            start = datetime.datetime.strptime(startDate, "%B %d, %Y")
+            end = datetime.datetime.strptime(endDate, "%B %d, %Y")
+            date_array = \
+                (start + datetime.timedelta(days=x) for x in range(0, (end - start).days))
+
+            date_range_array = []
+            # Date of transactions within range entered
+            for date_object in date_array:
+                #print(date_object.strftime("%B %d, %Y"))
+                date_object.strftime("%B %d, %Y")
+                date_range_array.append(date_object.strftime("%B %d, %Y"))
+
+            print()
+
+            # Compare the start date
+            start_date = dt.strptime(startDate, "%B %d, %Y")
+            end_date = dt.strptime(endDate, "%B %d, %Y")
         
+            # Error checking to see if start day is valid
+            if start_date > end_date:
+                print("ERROR: Start date cannot be greater than end date.")
+                print()
+                print()
+                database.search_database(criteria, term, startDate, endDate)
+            if start_date == end_date:
+                print("ERROR: End date must be at least one day later than the start date.")
+                print()
+                print()
+                database.search_database(criteria, term, startDate, endDate)
+            print()    
+            print("-----Displaying information for the purchases made on or after ", startDate, " and before ", endDate, "-----")
+            print()
+            z = 0
+            i = 1
+            executed = False
+            for i in range(len(date_range_array)):     
+                search = transactions.find({'Timestamp': date_range_array[i]})
+                for match in search:
+                    print(match)
+                    executed = True
+                i += 1
+
+            if executed == False:
+                print("**NO TRANSACTIONS OCCURRED DURING THIS TIME RANGE**")
+                print()
+                print(date_range_array)
+                database.search_database(criteria, term, startDate, endDate)
+            print()
+            print()
+
+        #if no date range selected        
         if criteria in ('TransactionID', 'Location', 'PaymentInfo'):
             history_array = []
             
@@ -163,16 +231,16 @@ class database:
         
             for i in start:
                 
-                a = 'ID:' + i['TransactionID'] 
-                b = 'Items:' + str(i['Items'])         
-                c = 'Timestamp:' + i['Timestamp']
+                a = 'ID:' + i['TransactionID'] + '\n'
+                b = 'Items:' + str(i['Items']) + '\n'        
+                c = 'Timestamp:' + i['Timestamp'] + '\n'
                 #d = ('Transaction hash:', i['this_hash'])
-                e = 'Store Location:' + i['Location']        
-                f = 'Transaction Cost:' + i['PaymentTotal']
-                g = 'Payment Method:' + i['PaymentInfo'] 
+                e = 'Store Location:' + i['Location'] + '\n'        
+                f = 'Transaction Cost:' + i['PaymentTotal'] + '\n'
+                g = 'Payment Method:' + i['PaymentInfo'] + '\n' + '\n'
                 
 
-                history_array.extend([ a , '\n' + b,'\n' + c,'\n' + e , '\n' + f,'\n' + g])
+                history_array.extend([a,b,c,e,f,g])
                 
             return history_array
         
@@ -180,9 +248,6 @@ class database:
                 history_array = "No results found"
         
         elif criteria in ('Items'):
-            history_array = "NOT YET IMPLEMENTED"
-        
-        elif criteria in ('Timestamp'):
             history_array = "NOT YET IMPLEMENTED"
         
         return history_array # Stuff that will show up in '_HISTORY_'
@@ -294,6 +359,7 @@ class database:
 ##        print()
 ##        print()
 ##        search_database()
+
 
 
         #Hayden's search
