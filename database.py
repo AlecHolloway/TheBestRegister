@@ -231,16 +231,16 @@ class database:
         
             for i in start:
                 
-                a = 'ID:' + i['TransactionID'] + '\n'
-                b = 'Items:' + str(i['Items']) + '\n'        
-                c = 'Timestamp:' + i['Timestamp'] + '\n'
+                a = 'ID:' + i['TransactionID'] 
+                b = 'Items:' + str(i['Items'])         
+                c = 'Timestamp:' + i['Timestamp']
                 #d = ('Transaction hash:', i['this_hash'])
-                e = 'Store Location:' + i['Location'] + '\n'        
-                f = 'Transaction Cost:' + i['PaymentTotal'] + '\n'
-                g = 'Payment Method:' + i['PaymentInfo'] + '\n' + '\n'
+                e = 'Store Location:' + i['Location']        
+                f = 'Transaction Cost:' + i['PaymentTotal']
+                g = 'Payment Method:' + i['PaymentInfo'] 
                 
 
-                history_array.extend([a,b,c,e,f,g])
+                history_array.extend([ a , '\n' + b,'\n' + c,'\n' + e , '\n' + f,'\n' + g])
                 
             return history_array
         
