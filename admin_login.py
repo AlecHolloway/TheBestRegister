@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import sys
 
 if sys.version_info[0] >= 3:
@@ -54,10 +53,10 @@ def AdminLoginCheck(un,pw):
    
 def AdminLogin():
     layout2 = [
-        [sg.Text('Administrator Login', size=(18,1), font ='Any 15')],
+        [sg.Text('Administrator Logins', size=(19,1), font ='Any 15')],
         [sg.Text('Username'), sg.Input(key='-username-', size = (20,1))],
         [sg.Text('Password'), sg.Input(key='-password-', size = (20,1), password_char='*')],
-        [sg.T('', size=(8,1)), sg.Button('Login'), sg.Button('Exit')] 
+        [sg.T('', size=(6,1)), sg.Button('Login', bind_return_key=True), sg.Button('Exit')] 
     ]
     un = sg.Window('Username entry', layout2,
                     auto_size_text = True,
@@ -68,8 +67,8 @@ def AdminLogin():
 
     while True:
         ev1, input = un.Read()
-        if ev1 in (None, 'Exit'):
-            break
+        if ev1 == None or ev1 == 'Exit':
+            return
 
         username = input['-username-']
         password = input['-password-']
@@ -81,7 +80,7 @@ def AdminLogin():
         elif not AdminLoginCheck(username, password) and ev1 in ('Login'):
             inval = [
                 [sg.Text('Invalid credentials provided. Please try again.')],
-                [sg.Button('Ok')]
+                [sg.Button('Ok', bind_return_key=True)]
             ]
             err = sg.Window('Inccorect username or password', inval)
             while True:
