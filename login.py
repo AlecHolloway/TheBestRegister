@@ -72,7 +72,7 @@ def UserLogin():
         [sg.Text('Password'), sg.Input(key='-password-', size = (20,1), password_char='*')],
         [sg.T('', size =(6,1)), sg.Button('Login',bind_return_key=True), sg.Button('Exit')], 
     ]
-    un = sg.Window('Username Entry', layout2,
+    un = sg.Window('Employee Login', layout2,
                     auto_size_text = True,
                     text_justification='r',
                     grab_anywhere=False,
