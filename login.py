@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import sys
 
 if sys.version_info[0] >= 3:
@@ -59,8 +58,6 @@ def PrintAcc():
         print(i['Password hash'])
 
 
-
-
 def LoginCheck(un,pw):
     results = user.find()
     for key in results:
@@ -70,7 +67,7 @@ def LoginCheck(un,pw):
 
 def UserLogin():
     layout2 = [
-        [sg.Text('Employee Login', size=(16,1), font ='Any 15')],
+        [sg.Text('Employee Login', size=(19,1), font ='Any 15')],
         [sg.Text('Username'), sg.Input(key='-username-', size = (20,1))],
         [sg.Text('Password'), sg.Input(key='-password-', size = (20,1), password_char='*')],
         [sg.T('', size =(6,1)), sg.Button('Login',bind_return_key=True), sg.Button('Exit')], 
@@ -91,29 +88,24 @@ def UserLogin():
              
         username = input['-username-']
         password = input['-password-']
+
         if LoginCheck(username, password) and ev1 in ('Login'):
             un.Close()
             return True
         
         elif not LoginCheck(username, password) and ev1 in ('Login'):
             inval = [
-                [sg.Text('Invalid credentials provided. Please try again.', size=(36,1), font ='Any 15')],
-                [sg.T('', size =(21,1)),sg.Button('OK')]
+                [sg.Text('Invalid credentials provided. Please try again.')],
+                [sg.Button('Ok', bind_return_key=True)]
             ]
             err = sg.Window('Inccorect username or password', inval)
             while True:
                 ev2, okay = err.Read()
-                if ev2 in (None, 'OK'):
+                if ev2 in (None, 'Ok'):
                     err.Close()
                     break
-            
-    
-
-
 
 def main():
     UserLogin()
-
-
 if __name__ == '__main__':
 	main()
